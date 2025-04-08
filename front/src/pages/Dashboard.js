@@ -191,7 +191,7 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchLatestPolls() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
+        const response = await axios.get("/api/polls/list/onchain/active");
         const latest = response.data.slice(0, 5);
         setLatestPolls(latest);
       } catch (error) {
@@ -209,12 +209,12 @@ const Dashboard = () => {
         return;
       }
       try {
-        const response = await axios.get("http://127.0.0.1:8000/user/me", {
+        const response = await axios.get("/api/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
         const balanceResponse = await axios.get(
-          `http://127.0.0.1:8000/user/balance/${response.data.wallet_address}`
+          `/api/user/balance/${response.data.wallet_address}`
         );
         setAgaBalance(balanceResponse.data.balance);
       } catch (error) {
@@ -244,7 +244,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
       setSearchActive(true);
     } catch (error) {
@@ -273,7 +273,7 @@ const Dashboard = () => {
     setSearchActive(true);
     setMessage("");
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
     } catch (error) {
       setPolls([]);
@@ -290,7 +290,7 @@ const Dashboard = () => {
   const handleRequestTokens = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("http://127.0.0.1:8000/tokens/request-tokens", {}, {
+      const response = await axios.post("/api/tokens/request-tokens", {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(response.data.message);

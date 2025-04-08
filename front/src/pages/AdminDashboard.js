@@ -26,12 +26,12 @@ const AdminDashboard = () => {
         }
 
         try {
-            const response = await axios.get("http://127.0.0.1:8000/user/me", {
+            const response = await axios.get("/api/user/me", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(response.data);
 
-            const balanceResponse = await axios.get(`http://127.0.0.1:8000/user/balance/${response.data.wallet_address}`);
+            const balanceResponse = await axios.get(`/api/user/balance/${response.data.wallet_address}`);
             setAgaBalance(balanceResponse.data.balance);
         } catch (error) {
             console.error("Error loading user:", error);
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
     async function fetchPolls() {
         try {
-            const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/");
+            const response = await axios.get("/api/polls/list/onchain/");
             setPolls(response.data);
         } catch (error) {
             console.error("Error loading polls:", error);
@@ -58,8 +58,8 @@ const AdminDashboard = () => {
 
     async function togglePollStatus(pollId, isActive) {
         const endpoint = isActive
-            ? `http://127.0.0.1:8000/polls/close/${pollId}`
-            : `http://127.0.0.1:8000/polls/open/${pollId}`;
+            ? `/api/polls/close/${pollId}`
+            : `/api/polls/open/${pollId}`;
 
         try {
             const token = localStorage.getItem("token");
