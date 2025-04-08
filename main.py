@@ -20,12 +20,12 @@ app.add_middleware(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
-app.include_router(register_router, prefix="/user", tags=["User"])
-app.include_router(auth_router, prefix="/user", tags=["Auth"])
-app.include_router(admin_router, prefix="/admin", tags=["Admin"])
-app.include_router(poll_router, prefix="/polls", tags=["Polls"])
-app.include_router(vote_router, prefix="/votes", tags=["Votes"])
-app.include_router(token_router, prefix="/tokens", tags=["Tokens"])
+app.include_router(register_router, prefix="/api/user", tags=["User"])
+app.include_router(auth_router, prefix="/api/user", tags=["Auth"])
+app.include_router(admin_router, prefix="/api/admin", tags=["Admin"])
+app.include_router(poll_router, prefix="/api/polls", tags=["Polls"])
+app.include_router(vote_router, prefix="/api/votes", tags=["Votes"])
+app.include_router(token_router, prefix="/api/tokens", tags=["Tokens"])
 
 if __name__ == "__main__":
     import uvicorn
