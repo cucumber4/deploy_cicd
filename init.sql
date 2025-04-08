@@ -56,3 +56,5 @@ ADD COLUMN description TEXT DEFAULT '';
 -- Добавляем описание к предложенным голосованиям
 ALTER TABLE proposed_polls
 ADD COLUMN description TEXT DEFAULT '';
+
+ALTER TABLE proposed_polls ADD COLUMN approved_by_admin boolean DEFAULT false;
