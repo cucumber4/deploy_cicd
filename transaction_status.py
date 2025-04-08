@@ -4,15 +4,15 @@ from transaction_count import CREATOR_ADDRESS, PRIVATE_KEY
 
 web3 = Web3(Web3.HTTPProvider("https://sepolia.infura.io/v3/cbfec6723c0b4264b5b3dcf5cba569e9"))
 
-account = "0xa21356475F98ABF66Fc39D390325e4002b75AEC4"
-private_key = "b4cec174d98688e762355891cbc52759bf5996cb7b47057d1b151b68e9454209"
+account = "0xF1f113B33365EAe18F7e4504E50E57679816090B"
+private_key = "ff3b75ea3cd0bfed0c2a9032fd6c9690bedcbe24f36c3a1350f5001bfd5adecc"
 
 nonce = web3.eth.get_transaction_count(account, "pending")
 print(f"Текущий nonce: {nonce}")
 
 tx = {
     'to': CREATOR_ADDRESS,
-    'value': 0,
+    'value': 1,
     'gas': 21000,
     'gasPrice': int(web3.eth.gas_price * 1.5),
     'nonce': nonce,  # актуальный nonce

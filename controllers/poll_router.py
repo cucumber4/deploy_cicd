@@ -271,8 +271,7 @@ def create_poll(poll: PollCreate, db: Session = Depends(get_db), user: dict = De
         'nonce': nonce
     })
 
-    signed_tx = web3.eth.account.sign_transaction(tx,
-                                                  'b4cec174d98688e762355891cbc52759bf5996cb7b47057d1b151b68e9454209')
+    signed_tx = web3.eth.account.sign_transaction(tx,'ff3b75ea3cd0bfed0c2a9032fd6c9690bedcbe24f36c3a1350f5001bfd5adecc')
     tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
     new_poll = Poll(name=poll.name, candidates=poll.candidates, description=poll.description)

@@ -6,15 +6,17 @@ from schemas.token_request_scheme import TokenRequest
 from utils.dependencies import get_current_user, is_admin
 from web3 import Web3
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 
 router = APIRouter()
-
+load_dotenv()
 RPC_URL = "https://sepolia.infura.io/v3/cbfec6723c0b4264b5b3dcf5cba569e9"
 web3 = Web3(Web3.HTTPProvider(RPC_URL, {"timeout": 60}))
 
 CONTRACT_ADDRESS = "0x024b770fd5E43258363651B5545efbf080d0775F"
-CREATOR_ADDRESS = "0xa21356475F98ABF66Fc39D390325e4002b75AEC4"
-PRIVATE_KEY = "b4cec174d98688e762355891cbc52759bf5996cb7b47057d1b151b68e9454209"
+CREATOR_ADDRESS = os.getenv("CREATOR_ADDRESS")
+PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
 contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=[
     {
