@@ -1,0 +1,95 @@
+.proposals-page {
+    min-height: 100vh;
+    width: 100%;
+    background: url("../../public/backlogin3.png") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .proposals-container {
+    width: 720px;
+    padding: 30px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    color: #111;
+  }
+  
+  .proposals-header {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #6e8efb;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .proposal-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .proposal-item {
+    padding: 18px;
+    border: 2px solid #6e8efb;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: #fff;
+  }
+  
+  .candidate-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  button {
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-right: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+  }
+  
+  .approve-button {
+    background: linear-gradient(to right, #42e695, #3bb2b8);
+    color: white;
+  }
+  
+  .reject-button {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    color: white;
+  }
+  
+  .contract-button {
+    background: linear-gradient(to right, #f7971e, #ffd200);
+    color: white;
+  }
+  
+  .back-button {
+    margin-top: 30px;
+    background: linear-gradient(to right, #6e8efb, #a777e3);
+    color: white;
+  }
+  
+  .proposals-message {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1rem;
+    background-color: #f0f0f0;
+    padding: 12px;
+    border-radius: 8px;
+    color: #333;
+  }
+  
+  .proposals-back {
+    text-align: center;
+  }
+  

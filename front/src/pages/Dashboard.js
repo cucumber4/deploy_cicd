@@ -11,6 +11,9 @@ import {
   Tooltip,
   LineChart,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  Axis,
 } from "recharts";
 import { FaVoteYea } from "react-icons/fa";
 import { FaChartPie, FaUsers, FaPoll, FaInfoCircle } from "react-icons/fa";
@@ -29,6 +32,21 @@ const Dashboard = () => {
   const [latestPolls, setLatestPolls] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
+
+  const [mostVotedPoll, setMostVotedPoll] = useState(null);
+
+useEffect(() => {
+  const fetchMostVoted = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
+      const sorted = [...response.data].sort((a, b) => b.vote_count - a.vote_count);
+      setMostVotedPoll(sorted[0]); // 🎯 top voted
+    } catch (error) {
+      console.error("Failed to fetch most voted:", error);
+    }
+  };
+  fetchMostVoted();
+}, []);
 
   const headingStyle = {
     fontSize: "30px",
@@ -59,7 +77,9 @@ const Dashboard = () => {
     flexDirection: "column",
     gap: "16px",
     marginLeft: "40px",
+    // width: "1px",
   };
+
 
   const cardStyle = (color) => ({
     background: color,
@@ -70,7 +90,7 @@ const Dashboard = () => {
     alignItems: "center",
     justifyContent: "space-between",
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    width: "300px", // Wider
+    width: "350px", // Wider
   });
 
   const pieData = [
@@ -82,7 +102,7 @@ const Dashboard = () => {
 
   const StatisticsChart = () => (
     <div style={{ width: "100%", maxHeight: "300px", marginTop: "40px" }}>
-      <h3 style={{ color: "#333", marginBottom: "10px", fontWeight: "bold" }}>
+      <h3 style={headingStyle}>
         Ballots Submitted By Date
       </h3>
       <ResponsiveContainer width="100%" height={250}>
@@ -172,18 +192,6 @@ const Dashboard = () => {
         <FaPoll size={32} />
       </div>
 
-      {/* Learn More */}
-      <div
-        style={{
-          ...cardStyle("linear-gradient(90deg, #6e8efb, #a777e3)"),
-          justifyContent: "center",
-          cursor: "pointer",
-        }}
-        onClick={() => navigate("/")}
-      >
-        <FaInfoCircle size={20} style={{ marginRight: "10px" }} />
-        <span style={{ fontWeight: "bold" }}>Learn More</span>
-      </div>
     </div>
   );
 
@@ -191,7 +199,7 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchLatestPolls() {
       try {
-        const response = await axios.get("/api/polls/list/onchain/active");
+        const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
         const latest = response.data.slice(0, 5);
         setLatestPolls(latest);
       } catch (error) {
@@ -209,12 +217,12 @@ const Dashboard = () => {
         return;
       }
       try {
-        const response = await axios.get("/api/user/me", {
+        const response = await axios.get("http://127.0.0.1:8000/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
         const balanceResponse = await axios.get(
-          `/api/user/balance/${response.data.wallet_address}`
+          `http://127.0.0.1:8000/user/balance/${response.data.wallet_address}`
         );
         setAgaBalance(balanceResponse.data.balance);
       } catch (error) {
@@ -244,7 +252,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
       setSearchActive(true);
     } catch (error) {
@@ -273,7 +281,7 @@ const Dashboard = () => {
     setSearchActive(true);
     setMessage("");
     try {
-      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
     } catch (error) {
       setPolls([]);
@@ -290,7 +298,7 @@ const Dashboard = () => {
   const handleRequestTokens = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("/api/tokens/request-tokens", {}, {
+      const response = await axios.post("http://127.0.0.1:8000/tokens/request-tokens", {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(response.data.message);
@@ -364,20 +372,32 @@ const Dashboard = () => {
         <StatisticsChart />
 
 {latestPolls.length > 0 && (
-  <div
-    style={{
-      display: "flex",
-      alignItems: "flex-start",
-      gap: "40px",
-      marginTop: "30px",
-    }}
-  >
-    {/* LEFT - Active Polls (fixed width) */}
-    <div style={{ width: "600px" }}>
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: sidebarCollapsed
+      ? "1fr 1fr 0.7fr"
+      : "1fr 1fr", // hide the most voted
+    gap: "70px", // nice spacing but not oversized
+    alignItems: "flex-start",
+    marginTop: "30px",
+    width: "100%",
+    paddingRight: sidebarCollapsed ? "0px" : "0", // prevent overflow on right
+    boxSizing: "border-box",
+  }}
+>
+    {/* LEFT - Active Polls */}
+    <div style={{ minWidth: "350px" }}>
       <h3 style={headingStyle}>Recent Active Polls</h3>
       <ul style={{ listStyleType: "none", padding: 0 }}>
         {latestPolls.map((poll) => (
-          <li key={poll.id} style={pollCardStyle}>
+          <li
+            key={poll.id}
+            style={{
+              ...pollCardStyle,
+              marginBottom: "20px", // ✅ More space between cards
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -385,12 +405,23 @@ const Dashboard = () => {
                 justifyContent: "space-between",
               }}
             >
-              <p style={{ fontSize: "18px", fontWeight: "600", color: "#000", margin: 0 }}>
+              <p
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#000",
+                  margin: 0,
+                }}
+              >
                 {poll.name}
               </p>
               <button
                 className="gradient-button"
-                style={{ display: "flex", alignItems: "center", padding: "10px 14px" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "10px 14px",
+                }}
                 onClick={() => navigate(`/vote/${poll.id}`)}
               >
                 <FaVoteYea size={20} />
@@ -401,15 +432,96 @@ const Dashboard = () => {
       </ul>
     </div>
 
-    {/* RIGHT - Stats Panel with dynamic width */}
-    <div
-      style={{
-        width: sidebarCollapsed ? "500px" : "320px", // ⬅️ Wider when collapsed
-        transition: "width 0.3s ease",
-      }}
-    >
+    {/* CENTER - Stats Panel */}
+<div >
+
+      <h3 style={{ ...headingStyle, marginLeft: "35px" }}>Our Current Statistics</h3>
       <RightStatsPanel />
     </div>
+
+    {/* RIGHT - Fun UI Element (optional decoration / widget) */}
+{sidebarCollapsed && mostVotedPoll && (
+  <div
+    style={{
+      minWidth: "220px",
+      maxWidth: "300px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "stretch", // 🧩 important for stacking
+      gap: "20px", // 🧼 space between poll card & button
+      marginTop: "70px",
+    }}
+  >
+    {/* Most Voted Card */}
+    <div
+      style={{
+        background: "linear-gradient(135deg, #f3e5f5, #e1bee7)",
+        borderRadius: "16px",
+        padding: "20px",
+        color: "#4a148c",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        cursor: "pointer",
+        animation: "fadeInSlide 0.6s ease-out",
+      }}
+      onClick={() => navigate(`/vote/${mostVotedPoll.id}`)}
+    >
+      <h3 style={{ marginBottom: "8px", fontWeight: "bold", fontSize: "18px", color: "#4a148c" }}>
+        🏆 Most Voted Poll
+      </h3>
+      <p style={{ margin: "0 0 12px", fontWeight: "600", fontSize: "16px" }}>
+        {mostVotedPoll.name}
+      </p>
+
+      <ResponsiveContainer width="100%" height={60}>
+        <BarChart
+          data={[{ name: mostVotedPoll.name, votes: mostVotedPoll.vote_count }]}
+          layout="vertical"
+          margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
+        >
+          <XAxis type="number" hide />
+          <Tooltip />
+          <Bar
+            dataKey="votes"
+            fill="url(#barGradient)"
+            radius={[0, 10, 10, 0]}
+            animationDuration={1200}
+          />
+          <defs>
+            <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#6e8efb" />
+              <stop offset="100%" stopColor="#a777e3" />
+            </linearGradient>
+          </defs>
+        </BarChart>
+      </ResponsiveContainer>
+
+      <p style={{ marginTop: "10px", fontSize: "14px", fontWeight: "bold" }}>
+        Total Votes: {mostVotedPoll.vote_count}
+      </p>
+    </div>
+
+    {/* Learn More Button on Right Side */}
+    <div
+      style={{
+        background: "linear-gradient(90deg, #6e8efb, #a777e3)",
+        borderRadius: "12px",
+        padding: "14px 20px",
+        color: "white",
+        fontWeight: "bold",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        cursor: "pointer",
+      }}
+      onClick={() => navigate("/")}
+    >
+      <FaInfoCircle size={20} style={{ marginRight: "10px" }} />
+      Learn More
+    </div>
+  </div>
+)}
+
   </div>
 )}
 

@@ -131,14 +131,10 @@
   transition: width 0.3s ease;
 }
 
-.sidebar.collapsed + .collapse-btn {
-  left: 0; /* move button to screen edge */
-}
-
 .collapse-btn {
   position: absolute;
   top: 20px;
-  left: 300px; /* aligns to expanded sidebar edge */
+  left: 300px;
   z-index: 10;
   background-color: #6e8efb;
   color: white;
@@ -148,6 +144,11 @@
   cursor: pointer;
   transition: left 0.3s ease;
 }
+
+.sidebar.collapsed + .collapse-btn {
+  left: 0 !important;
+}
+
 
 
 /* Search Bar */
@@ -187,4 +188,13 @@
     opacity: 0.8;
 }
 
-
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

@@ -1,9 +1,13 @@
+// src/pages/TokenRequests.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./TokenRequests.css";
 
 const TokenRequests = () => {
     const [requests, setRequests] = useState([]);
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchRequests();
@@ -12,7 +16,7 @@ const TokenRequests = () => {
     async function fetchRequests() {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get("/api/tokens/token-requests", {
+            const response = await axios.get("http://127.0.0.1:8000/tokens/token-requests", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRequests(response.data);
@@ -24,7 +28,7 @@ const TokenRequests = () => {
     async function handleApprove(id) {
         try {
             const token = localStorage.getItem("token");
-            await axios.post(`/api/tokens/approve-request/${id}`, {}, {
+            await axios.post(`http://127.0.0.1:8000/tokens/approve-request/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchRequests();
@@ -36,7 +40,7 @@ const TokenRequests = () => {
     async function handleReject(id) {
         try {
             const token = localStorage.getItem("token");
-            await axios.post(`/api/tokens/reject-request/${id}`, {}, {
+            await axios.post(`http://127.0.0.1:8000/tokens/reject-request/${id}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchRequests();
@@ -45,35 +49,37 @@ const TokenRequests = () => {
         }
     }
 
-    const buttonStyle = {
-        padding: "10px 16px",
-        borderRadius: "6px",
-        border: "none",
-        backgroundColor: "#00FFC2",
-        color: "#000",
-        fontWeight: 600,
-        cursor: "pointer",
-        transition: "background-color 0.2s ease",
-        margin: "5px"
-    };
-
     return (
-        <div style={{ textAlign: "center", padding: "30px", color: "#FFFFFF", fontFamily: "Montserrat, sans-serif", background: "#222", minHeight: "100vh" }}>
-            <h2>Запросы на AGA</h2>
+        <div className="token-page">
+            <div className="token-container">
+                <h2 className="token-title">💸 Запросы на получение токенов AGA</h2>
 
-            {requests.length === 0 ? <p>Нет новых запросов</p> : (
-                <ul style={{ listStyleType: "none", padding: 0 }}>
-                    {requests.map((req) => (
-                        <li key={req.id} style={{ marginBottom: "15px", background: "#333", padding: "10px", borderRadius: "6px" }}>
-                            <p>{req.nickname}</p>
-                            <button onClick={() => handleApprove(req.id)} style={buttonStyle}>Одобрить</button>
-                            <button onClick={() => handleReject(req.id)} style={{ ...buttonStyle, backgroundColor: "red", color: "#fff" }}>Отклонить</button>
-                        </li>
-                    ))}
-                </ul>
-            )}
+                {requests.length === 0 ? (
+                    <p className="token-empty">Нет новых запросов</p>
+                ) : (
+                    <ul className="token-list">
+                        {requests.map((req) => (
+                            <li key={req.id} className="token-item">
+                                <p><strong>Пользователь:</strong> {req.nickname}</p>
+                                <p><strong>Email:</strong> {req.email}</p>
+                                <p><strong>Wallet:</strong> {req.wallet}</p>
+                                <p><strong>Количество:</strong> {req.amount} AGA</p>
 
-            {message && <p>{message}</p>}
+                                <div className="token-buttons">
+                                    <button onClick={() => handleApprove(req.id)} className="approve-button">✅ Одобрить</button>
+                                    <button onClick={() => handleReject(req.id)} className="reject-button">❌ Отклонить</button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                {message && <p className="token-message">{message}</p>}
+
+                <div className="token-back">
+                    <button className="back-button" onClick={() => navigate(-1)}>← Назад</button>
+                </div>
+            </div>
         </div>
     );
 };

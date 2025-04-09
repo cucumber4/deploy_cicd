@@ -1,0 +1,91 @@
+.token-page {
+    min-height: 100vh;
+    background: url("../../public/backlogin3.png") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .token-container {
+    max-width: 720px;
+    width: 100%;
+    padding: 30px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    color: #111;
+  }
+  
+  
+  .token-title {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #6e8efb;
+  }
+  
+  .token-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .token-item {
+    padding: 20px;
+    border: 2px solid #6e8efb;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: #fff;
+  }
+  
+  .token-item p {
+    margin: 4px 0;
+  }
+  
+  .token-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+  }
+  
+  .approve-button,
+  .reject-button,
+  .back-button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+  }
+  
+  .approve-button {
+    background: linear-gradient(to right, #42e695, #3bb2b8);
+  }
+  
+  .reject-button {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+  }
+  
+  .back-button {
+    background: linear-gradient(to right, #6e8efb, #a777e3);
+    margin-top: 20px;
+  }
+  
+  .token-message {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1rem;
+    background-color: #f0f0f0;
+    padding: 12px;
+    border-radius: 8px;
+    color: #333;
+  }
+  
+  .token-back {
+    text-align: center;
+  }
+  

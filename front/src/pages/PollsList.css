@@ -1,0 +1,114 @@
+.polls-page {
+  min-height: 100vh;
+  background: url("../../public/backlogin3.png") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  padding: 40px 20px;
+}
+
+
+.polls-container {
+  max-width: 1000px;
+  width: 100%;
+}
+
+.polls-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(to right, #6e8efb, #a777e3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.polls-filter {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-button {
+  padding: 10px 16px;
+  margin: 0 10px;
+  background: #ddd;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-button.active {
+  background: linear-gradient(to right, #6e8efb, #a777e3);
+  color: white;
+}
+
+.polls-empty {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #777;
+}
+
+.polls-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+.poll-card {
+  width: 300px;
+  padding: 3px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3, #6e8efb);
+  background-size: 300% 300%;
+  animation: border-glow 6s ease infinite;
+}
+
+.poll-card-inner {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  height: 100%;
+}
+
+.poll-card h3 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.poll-card p {
+  font-size: 15px;
+  color: #555;
+  margin: 8px 0;
+}
+
+.poll-date {
+  font-style: italic;
+  font-size: 14px;
+  color: #888;
+}
+
+.vote-button {
+  margin-top: 10px;
+  padding: 10px 16px;
+  width: 100%;
+  background: linear-gradient(to right, #42e695, #3bb2b8);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.vote-button:hover {
+  opacity: 0.9;
+}
+
+@keyframes border-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

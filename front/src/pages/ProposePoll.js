@@ -49,7 +49,7 @@ const ProposePoll = () => {
 
         try {
             const response = await axios.post(
-                "/api/polls/propose",
+                "http://127.0.0.1:8000/polls/propose",
                 { name, description, candidates },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

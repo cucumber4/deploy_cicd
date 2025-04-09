@@ -1,6 +1,10 @@
+// src/pages/ResetPassword.js
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { FaLock } from "react-icons/fa";
+import logo from "../assets/agalogo.png";
+import "./ForgotPassword.css";
 
 const ResetPassword = () => {
     const [code, setCode] = useState("");
@@ -8,35 +12,74 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    const location = useLocation();
-    const email = location.state?.email || ""; // Получаем email из навигации
 
-    const resetPassword = async () => {
+    const handleReset = async () => {
         if (newPassword !== confirmPassword) {
-            setMessage("Пароли не совпадают!");
+            setMessage("❌ Пароли не совпадают!");
             return;
         }
 
         try {
-            await axios.post("/api/user/reset-password", { email, code, new_password: newPassword });
-            setMessage("Пароль успешно сброшен! Перенаправление...");
-            setTimeout(() => navigate("/"), 2000);
+            await axios.post("http://127.0.0.1:8000/user/reset-password", {
+                code,
+                new_password: newPassword
+            });
+            setMessage("✅ Пароль успешно сброшен! Перенаправление...");
+            setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
-            setMessage("Ошибка сброса пароля.");
+            setMessage("❌ Ошибка сброса пароля.");
         }
     };
 
     return (
-        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#111", fontFamily: "Montserrat, sans-serif" }}>
-            <div style={{ width: "420px", padding: "30px", borderRadius: "8px", backgroundColor: "rgba(30, 30, 47, 0.9)", boxShadow: "0 0 10px rgba(0,0,0,0.3)", color: "#FFFFFF" }}>
-                <h2 style={{ textAlign: "center", color: "#00FFC2", fontSize: "1.5rem", fontWeight: 600 }}>Сброс пароля</h2>
+        <div className="login-container">
+            <div className="left-side-login">
+                <img src={logo} alt="AGA Logo" className="aga-logo" />
+            </div>
+            <div className="right-side-login">
+                <div className="form-box">
+                    <h2>Reset Password</h2>
+                    <p>Enter the code from your email and a new password.</p>
 
-                <input type="text" placeholder="Введите код" value={code} onChange={(e) => setCode(e.target.value)} required />
-                <input type="password" placeholder="Новый пароль" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-                <input type="password" placeholder="Подтвердите пароль" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-                <button onClick={resetPassword}>Сбросить пароль</button>
+                    <div className="input-group">
+                        <FaLock className="icon" />
+                        <input
+                            type="text"
+                            placeholder="Verification Code"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                {message && <p>{message}</p>}
+                    <div className="input-group">
+                        <FaLock className="icon" />
+                        <input
+                            type="password"
+                            placeholder="New Password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <FaLock className="icon" />
+                        <input
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <button className="register-btn" onClick={handleReset}>
+                        Reset Password
+                    </button>
+
+                    {message && <p className="message">{message}</p>}
+                </div>
             </div>
         </div>
     );

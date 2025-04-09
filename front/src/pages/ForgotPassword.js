@@ -17,7 +17,7 @@ const ForgotPassword = () => {
   const sendResetCode = async () => {
     setLoading(true);
     try {
-      await axios.post("/api/user/forgot-password", { email });
+      await axios.post("http://127.0.0.1:8000/user/forgot-password", { email });
       setStep(2);
       setMessage("📩 Code sent to your email");
     } catch {
@@ -30,7 +30,7 @@ const ForgotPassword = () => {
   const resetPassword = async () => {
     setLoading(true);
     try {
-      await axios.post("/api/user/reset-password", {
+      await axios.post("http://127.0.0.1:8000/user/reset-password", {
         email,
         code,
         new_password: newPassword,
