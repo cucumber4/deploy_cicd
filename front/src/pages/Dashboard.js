@@ -38,7 +38,7 @@ const Dashboard = () => {
 useEffect(() => {
   const fetchMostVoted = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
+      const response = await axios.get("/api/polls/list/onchain/active");
       const sorted = [...response.data].sort((a, b) => b.vote_count - a.vote_count);
       setMostVotedPoll(sorted[0]); // 🎯 top voted
     } catch (error) {
@@ -199,7 +199,7 @@ useEffect(() => {
   useEffect(() => {
     async function fetchLatestPolls() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
+        const response = await axios.get("/api/polls/list/onchain/active");
         const latest = response.data.slice(0, 5);
         setLatestPolls(latest);
       } catch (error) {
@@ -217,7 +217,7 @@ useEffect(() => {
         return;
       }
       try {
-        const response = await axios.get("http://127.0.0.1:8000/user/me", {
+        const response = await axios.get("/api/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
@@ -252,7 +252,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
       setSearchActive(true);
     } catch (error) {
@@ -281,7 +281,7 @@ useEffect(() => {
     setSearchActive(true);
     setMessage("");
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/polls/search?name=${encodeURIComponent(searchTerm)}`);
+      const response = await axios.get(`/api/polls/search?name=${encodeURIComponent(searchTerm)}`);
       setPolls(response.data);
     } catch (error) {
       setPolls([]);
@@ -298,7 +298,7 @@ useEffect(() => {
   const handleRequestTokens = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("http://127.0.0.1:8000/tokens/request-tokens", {}, {
+      const response = await axios.post("/api/tokens/request-tokens", {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage(response.data.message);

@@ -12,7 +12,7 @@ const VoteHistory = () => {
     async function fetchHistory() {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get("http://127.0.0.1:8000/votes/vote-history", {
+            const response = await axios.get("/api/votes/vote-history", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setHistory(response.data);
