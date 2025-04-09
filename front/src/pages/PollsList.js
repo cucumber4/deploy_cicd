@@ -16,7 +16,7 @@ const PollsList = () => {
     async function fetchPolls() {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get("/api/polls/all", {
+            const response = await axios.get("/polls/list/onchain/active", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPolls(response.data);
