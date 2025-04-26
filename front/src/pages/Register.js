@@ -36,7 +36,7 @@ const Register = () => {
         }
         try {
             const { confirm_password, ...payload } = formData;
-            const response = await axios.post("/api/user/register", payload, {
+            const response = await axios.post("http://127.0.0.1:8000/user/register", payload, {
                 headers: { "Content-Type": "application/json" }
             });
             setMessage(response.data.message);
@@ -49,7 +49,7 @@ const Register = () => {
     const handleSubmitVerification = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("/api/user/verify", {
+            const response = await axios.post("http://127.0.0.1:8000/user/verify", {
                 email: formData.email,
                 code: verificationCode
             }, {

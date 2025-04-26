@@ -1,95 +1,131 @@
-.proposals-page {
-    min-height: 100vh;
-    width: 100%;
-    background: url("../../public/backlogin3.png") no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    font-family: 'Montserrat', sans-serif;
-  }
-  
-  .proposals-container {
-    width: 720px;
-    padding: 30px;
-    border-radius: 16px;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    color: #111;
-  }
-  
-  .proposals-header {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #6e8efb;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
-  .proposal-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .proposal-item {
-    padding: 18px;
-    border: 2px solid #6e8efb;
-    border-radius: 12px;
-    margin-bottom: 16px;
-    background: #fff;
-  }
-  
-  .candidate-list {
-    list-style-type: disc;
-    padding-left: 20px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  button {
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-    margin-right: 10px;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: none;
-  }
-  
-  .approve-button {
-    background: linear-gradient(to right, #42e695, #3bb2b8);
-    color: white;
-  }
-  
-  .reject-button {
-    background: linear-gradient(to right, #ff416c, #ff4b2b);
-    color: white;
-  }
-  
-  .contract-button {
-    background: linear-gradient(to right, #f7971e, #ffd200);
-    color: white;
-  }
-  
-  .back-button {
-    margin-top: 30px;
-    background: linear-gradient(to right, #6e8efb, #a777e3);
-    color: white;
-  }
-  
-  .proposals-message {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 1rem;
-    background-color: #f0f0f0;
-    padding: 12px;
-    border-radius: 8px;
-    color: #333;
-  }
-  
-  .proposals-back {
-    text-align: center;
-  }
-  
+.proposals-font {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.proposals-content {
+  padding: 40px;
+  width: 100%;
+}
+
+.proposals-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.proposals-heading {
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(90deg, #6e8efb, #a777e3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.proposals-empty {
+  text-align: center;
+}
+
+.proposals-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 16px;
+  table-layout: fixed;
+}
+
+.proposals-thead {
+  background: #f4f4f4;
+}
+
+.proposals-th {
+  padding: 14px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.col-name {
+  width: 25%;
+}
+.col-desc {
+  width: 30%;
+}
+.col-options {
+  width: 25%;
+}
+.col-actions {
+  width: 20%;
+  text-align: center;
+  padding-right: 60px;
+}
+
+.proposals-row {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.proposals-td {
+  padding: 14px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.proposals-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.proposals-actions {
+  text-align: right;
+}
+
+.proposals-btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.proposals-btn {
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 110px;
+}
+
+.proposals-btn.approve {
+  background: linear-gradient(90deg, #6e8efb, #a777e3);
+  color: white;
+}
+
+.proposals-btn.reject {
+  background: linear-gradient(90deg, #ff758c, #ff7eb3);
+  color: white;
+}
+
+.proposals-btn:hover {
+  opacity: 0.9;
+}
+
+.proposals-status.approved {
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.proposals-status.pending {
+  font-weight: 600;
+  color: #ff9800;
+  display: inline-block;
+  min-width: 1.5em;
+}

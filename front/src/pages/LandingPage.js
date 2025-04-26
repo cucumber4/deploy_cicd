@@ -3,7 +3,7 @@ import "./LandingPage.css";
 import securityIcon from "../assets/about2.png";
 import { useNavigate } from "react-router-dom";
 import videoBg from "../assets/background.mp4"
-import Navbar from "./Navbar";
+import Navbar from "../pages/Navbar";
 import how1 from "../assets/how1f.jpg";
 import how2 from "../assets/how2f.png";
 import how3 from "../assets/how3f.png";
@@ -19,7 +19,7 @@ import metamaskLogo from "../assets/metalogof.png";
 import registerImg from "../assets/register.jpg";
 import walletAddressImg from "../assets/wallet.png";
 import lockImg from "../assets/lock.png";
-import confirm from "../assets/confirm.png";
+import confirm from  "../assets/confirm.png";
 import arrowIcon from "../assets/arrow.png"
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -189,7 +189,7 @@ const LandingPage = () => {
         {/* Step 1 */}
         <div className="step">
           <img src={metamaskLogo} alt="MetaMask" className="step-img" />
-          <a href="front/src/pages/LandingPage" target="_blank" rel="noopener noreferrer" className="step-link">
+          <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" className="step-link">
             MetaMask
           </a>
           <p className="step-text">Create a MetaMask wallet for secure authentication.</p>
@@ -200,7 +200,7 @@ const LandingPage = () => {
         {/* Step 2 */}
         <div className="step">
           <img src={registerImg} alt="Register Page" className="step-img" />
-          <a href="/front/src/pages/Register" className="step-link">Registration Page</a>
+          <a href="/register" className="step-link">Registration Page</a>
           <p className="step-text">Sign up to get access.</p>
         </div>
 

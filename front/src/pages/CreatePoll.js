@@ -1,233 +1,216 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import SidebarLayout from "../components/SidebarLayout";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "../pages/Dashboard.css";
+import { FiCopy, FiCheck } from "react-icons/fi";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import "./CreatePoll.css";
 
 const CreatePoll = () => {
-    const [pollData, setPollData] = useState({
-        name: "",
-        description: "",
-        candidates: [""]
-    });
-    const [message, setMessage] = useState("");
-    const [hoverCreate, setHoverCreate] = useState(false);
-    const [hoverAdd, setHoverAdd] = useState(false);
-    const navigate = useNavigate();
+  const [pollData, setPollData] = useState({
+    name: "",
+    description: "",
+    candidates: ["", ""],
+  });
+  const [message, setMessage] = useState("");
+  const [user, setUser] = useState(null);
+  const [agaBalance, setAgaBalance] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
 
-    useEffect(() => {
-        const link = document.createElement("link");
-        link.href = "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap";
-        link.rel = "stylesheet";
-        document.head.appendChild(link);
-        return () => {
-            document.head.removeChild(link);
-        };
-    }, []);
-
-    const handleChange = (e, index) => {
-        const newCandidates = [...pollData.candidates];
-        newCandidates[index] = e.target.value;
-        setPollData({ ...pollData, candidates: newCandidates });
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.href = "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap";
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+    return () => {
+      document.head.removeChild(link);
     };
+  }, []);
 
-    const handleNameChange = (e) => {
-        setPollData({ ...pollData, name: e.target.value });
-    };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
 
-    const handleDescriptionChange = (e) => {
-        setPollData({ ...pollData, description: e.target.value });
-    };
+    axios
+      .get("http://127.0.0.1:8000/user/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setUser(res.data);
+        return axios.get(`http://127.0.0.1:8000/user/balance/${res.data.wallet_address}`);
+      })
+      .then((balanceRes) => setAgaBalance(balanceRes.data.balance))
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/");
+      });
+  }, [navigate]);
 
-    const addCandidate = () => {
-        if (pollData.candidates.length < 8) {
-            setPollData({ ...pollData, candidates: [...pollData.candidates, ""] });
-        } else {
-            setMessage("Максимум 8 кандидатов.");
-        }
-    };
+  const handleChange = (e, index) => {
+    const newCandidates = [...pollData.candidates];
+    newCandidates[index] = e.target.value;
+    setPollData({ ...pollData, candidates: newCandidates });
+  };
 
-    const removeCandidate = (index) => {
-        if (pollData.candidates.length > 2) {
-            const newCandidates = pollData.candidates.filter((_, i) => i !== index);
-            setPollData({ ...pollData, candidates: newCandidates });
-        } else {
-            setMessage("Минимум 2 кандидата.");
-        }
-    };
+  const addCandidate = () => {
+    if (pollData.candidates.length < 8) {
+      setPollData({ ...pollData, candidates: [...pollData.candidates, ""] });
+    } else {
+      setMessage("Maximum 8 candidates allowed.");
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setMessage("Ошибка: Не авторизован.");
-            return;
-        }
+  const removeCandidate = (index) => {
+    if (pollData.candidates.length > 2) {
+      const updated = pollData.candidates.filter((_, i) => i !== index);
+      setPollData({ ...pollData, candidates: updated });
+    } else {
+      setMessage("Minimum 2 candidates required.");
+    }
+  };
 
-        try {
-            const response = await axios.post("/api/polls/create", pollData, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("Error: Not authorized.");
+      return;
+    }
 
-            setMessage("Голосование успешно создано! TX Hash: " + response.data.tx_hash);
-            setTimeout(() => navigate("/dashboard"), 2000);
-        } catch (error) {
-            setMessage("Ошибка при создании голосования: " + (error.response?.data?.detail || "Неизвестная ошибка"));
-        }
-    };
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/polls/create", pollData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    // 🔹 Стили
-    const pageStyle = {
-        minHeight: "100vh",
-        margin: 0,
-        padding: 0,
-        background: "radial-gradient(circle at top, #222 0%, #111 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "'Montserrat', sans-serif",
-    };
+      setMessage({
+        text: "Poll created successfully!",
+        hash: response.data.tx_hash,
+      });
+    } catch (error) {
+      setMessage(
+        "Error creating poll: " +
+          (error.response?.data?.detail || "Unknown error")
+      );
+    }
+  };
 
-    const containerStyle = {
-        width: "500px",
-        padding: "30px",
-        borderRadius: "8px",
-        backgroundColor: "rgba(30, 30, 47, 0.9)",
-        boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-        color: "#FFFFFF",
-        display: "flex",
-        flexDirection: "column",
-        gap: "15px",
-    };
+  return (
+    <div className="dashboard-container montserrat-font">
+      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <SidebarLayout />
+      </div>
 
-    const headerStyle = {
-        marginBottom: "10px",
-        textAlign: "center",
-        color: "#00FFC2",
-        fontSize: "1.5rem",
-        fontWeight: 600,
-        textShadow: "0 0 5px rgba(0,255,194,0.4)",
-    };
+      <button
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        className="collapse-btn"
+      >
+        {sidebarCollapsed ? "→" : "←"}
+      </button>
 
-    const inputStyle = {
-        padding: "10px",
-        borderRadius: "6px",
-        border: "1px solid #444",
-        backgroundColor: "#2C2C3A",
-        color: "#fff",
-        outline: "none",
-        fontSize: "0.95rem",
-        width: "100%",
-    };
+      <div className="main-content">
+        <div className="poll-form-container">
+          <h2 className="poll-form-heading">Create a Poll</h2>
+          <form onSubmit={handleSubmit} className="poll-form">
+            <input
+              type="text"
+              placeholder="Poll Title"
+              value={pollData.name}
+              onChange={(e) => setPollData({ ...pollData, name: e.target.value })}
+              required
+              className="poll-input"
+            />
 
-    const buttonStyle = {
-        padding: "10px 16px",
-        borderRadius: "6px",
-        border: "none",
-        backgroundColor: "#00FFC2",
-        color: "#000",
-        fontWeight: 600,
-        cursor: "pointer",
-        transition: "background-color 0.2s ease",
-        width: "100%",
-    };
+            <textarea
+              placeholder="Poll Description"
+              value={pollData.description}
+              onChange={(e) => setPollData({ ...pollData, description: e.target.value })}
+              required
+              className="poll-input textarea"
+            />
 
-    const buttonHover = {
-        backgroundColor: "#00E6AE",
-    };
-
-    const messageStyle = {
-        marginTop: "10px",
-        textAlign: "center",
-        fontSize: "0.9rem",
-        backgroundColor: "#2C2C3A",
-        padding: "10px",
-        borderRadius: "6px",
-    };
-
-    return (
-        <div style={pageStyle}>
-            <div style={containerStyle}>
-                <h2 style={headerStyle}>Создать голосование</h2>
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <input
+            <TransitionGroup>
+              {pollData.candidates.map((candidate, index) => {
+                const nodeRef = React.createRef();
+                return (
+                  <CSSTransition
+                    key={index}
+                    nodeRef={nodeRef}
+                    timeout={300}
+                    classNames="fade"
+                  >
+                    <div ref={nodeRef} className="candidate-input-group">
+                      <input
                         type="text"
-                        name="name"
-                        placeholder="Название голосования"
-                        value={pollData.name}
-                        onChange={handleNameChange}
-                        style={inputStyle}
+                        placeholder={`Candidate ${index + 1}`}
+                        value={candidate}
+                        onChange={(e) => handleChange(e, index)}
                         required
-                    />
-
-                    <textarea
-                        name="description"
-                        placeholder="Описание голосования"
-                        value={pollData.description}
-                        onChange={handleDescriptionChange}
-                        style={{
-                            ...inputStyle,
-                            minHeight: "80px",
-                            resize: "vertical"
-                        }}
-                        required
-                    />
-
-                    {pollData.candidates.map((candidate, index) => (
-                        <div key={index} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                            <input
-                                type="text"
-                                placeholder={`Кандидат ${index + 1}`}
-                                value={candidate}
-                                onChange={(e) => handleChange(e, index)}
-                                style={inputStyle}
-                                required
-                            />
-                            {pollData.candidates.length > 2 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeCandidate(index)}
-                                    style={{ ...buttonStyle, width: "40px", textAlign: "center", fontSize: "1rem" }}
-                                >
-                                    -
-                                </button>
-                            )}
-                        </div>
-                    ))}
-
-                    {pollData.candidates.length < 8 && (
+                        className="poll-input"
+                      />
+                      {pollData.candidates.length > 2 && (
                         <button
-                            type="button"
-                            onClick={addCandidate}
-                            style={{
-                                ...buttonStyle,
-                                ...(hoverAdd ? buttonHover : {}),
-                            }}
-                            onMouseEnter={() => setHoverAdd(true)}
-                            onMouseLeave={() => setHoverAdd(false)}
+                          type="button"
+                          onClick={() => removeCandidate(index)}
+                          className="remove-candidate-btn"
                         >
-                            + Добавить кандидата
+                          −
                         </button>
-                    )}
+                      )}
+                    </div>
+                  </CSSTransition>
+                );
+              })}
+            </TransitionGroup>
 
-                    <button
-                        type="submit"
-                        style={{
-                            ...buttonStyle,
-                            ...(hoverCreate ? buttonHover : {}),
-                        }}
-                        onMouseEnter={() => setHoverCreate(true)}
-                        onMouseLeave={() => setHoverCreate(false)}
-                    >
-                        Создать голосование
-                    </button>
-                </form>
+            {pollData.candidates.length < 8 && (
+              <button type="button" onClick={addCandidate} className="gradient-button">
+                + Add Candidate
+              </button>
+            )}
 
-                {message && <p style={messageStyle}>{message}</p>}
+            <button type="submit" className="gradient-button">
+              Create Poll
+            </button>
+          </form>
+
+          {message && typeof message === "object" && (
+            <div className="poll-message-box">
+              <p><strong>{message.text}</strong></p>
+              <div className="poll-hash-box">
+                <code className="poll-hash">{message.hash}</code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(message.hash);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="copy-button"
+                  title="Copy to clipboard"
+                >
+                  {copied ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+              </div>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="back-dashboard-btn"
+              >
+                Back to Dashboard
+              </button>
             </div>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default CreatePoll;

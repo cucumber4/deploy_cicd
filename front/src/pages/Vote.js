@@ -18,7 +18,7 @@ const Vote = () => {
             }
 
             try {
-                const response = await axios.get(`/api/polls/${id}`);
+                const response = await axios.get(`http://127.0.0.1:8000/polls/${id}`);
                 setPoll(response.data);
             } catch (err) {
                 console.error("Error loading poll:", err);
@@ -33,7 +33,7 @@ const Vote = () => {
         try {
             const token = localStorage.getItem("token");
             await axios.post(
-                `/api/polls/vote/${id}`,
+                `http://127.0.0.1:8000/polls/vote/${id}`,
                 { candidate_index: candidateIndex },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

@@ -6,6 +6,7 @@ from controllers.admin_router import router as admin_router
 from controllers.poll_router import router as poll_router
 from controllers.vote_router import router as vote_router
 from controllers.token_router import router as token_router
+from controllers.group_router import router as group_router  # ✅ добавлено
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -26,6 +27,7 @@ app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(poll_router, prefix="/polls", tags=["Polls"])
 app.include_router(vote_router, prefix="/votes", tags=["Votes"])
 app.include_router(token_router, prefix="/tokens", tags=["Tokens"])
+app.include_router(group_router, prefix="/groups", tags=["Groups"])
 
 if __name__ == "__main__":
     import uvicorn

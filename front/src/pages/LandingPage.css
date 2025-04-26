@@ -439,3 +439,133 @@
   margin-right: auto;
   color: #b0b0b0;
 }
+
+
+@media (max-width: 768px) {
+  /* Make hero section expand naturally */
+  .hero-section {
+  position: relative;
+  /*padding: 80px 12vw 160px 12vw; !* bottom padding gives space for stats *!*/
+  background-size: cover;
+  background-position: left center;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ CENTER CHILDREN INCLUDING STATS */
+}
+
+  /* Ensure background video fills screen */
+  .background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    z-index: -1;
+  }
+
+  /* Hide decorative images on mobile */
+  .security-image,
+  .hero-section .icon-hero {
+    display: none !important;
+  }
+
+
+  .text-container {
+    max-width: 90%;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .landing-title {
+    font-size: 30px;
+  }
+
+  .big-login-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+
+  /* STATS BAR (FINAL, CENTERED, BIG, BETWEEN SECTIONS) */
+.stats-bar {
+    margin-top: 30px; /* 👈 Gently pushes it down */
+    flex-direction: column;
+    height: auto;
+    /*padding: 30px;*/
+    gap: 10px;
+    /*width: 90%;*/
+    margin-left: 1.5px;
+    /*margin-top: 500px;*/
+    border-radius: 20px;
+    text-align: center;
+    background-color: #1A1F36; /* preserve the look */
+    /*width: calc(100% - 40px); !* Adds left/right margin *!*/
+    padding: 25px 30px; /* horizontal padding inside */
+  }
+
+
+  .stat-item {
+    color: white;
+  }
+
+  .stat-item h2 {
+    font-size: 28px;
+    font-weight: bold;
+    font-family: "Bungee Outline";
+  }
+
+  .stat-item p {
+    font-size: 14px;
+    color: #b0b0b0;
+  }
+
+  /* Push down the next section so it's not covered */
+  .security-section {
+    padding-top: 140px;
+  }
+
+  /* Stack elements vertically on small screens */
+  .steps-container,
+  .use-cases-container,
+  .register-steps {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .step-card,
+  .use-case,
+  .step {
+    width: 90%;
+  }
+
+  .step-card img,
+  .use-case-icon {
+    height: 150px;
+  }
+
+  .security-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 30px;
+  }
+
+  .left-side,
+  .right-side {
+    width: 100%;
+  }
+
+  .register-footer {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .text-container {
+    max-width: 90%;
+    text-align: center;
+    margin-top: 100px; /* ensures space above stats */
+    margin-left: -2px;
+  }
+}

@@ -453,8 +453,11 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
     new_poll = Poll(
         name=proposed_poll.name,
         candidates=proposed_poll.candidates,
-        description=proposed_poll.description  # ✅ добавляем описание
+        description=proposed_poll.description,
+        active=True,
+        group_id=proposed_poll.group_id  # 👈 сохраняем связь
     )
+
     db.add(new_poll)
     db.commit()
 

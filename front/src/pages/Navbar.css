@@ -101,3 +101,32 @@
 .login-btn:hover {
   opacity: 0.8;
 }
+
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+
+  .logo {
+    height: 32px;
+  }
+
+  .nav-links {
+    display: none; /* Hide links unless using a mobile menu */
+  }
+
+
+  .auth-links {
+    margin-left: auto;
+
+  }
+
+  .login-btn {
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    /*margin-right: -4px;*/
+  }
+}
+

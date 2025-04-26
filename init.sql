@@ -58,3 +58,29 @@ ALTER TABLE proposed_polls
 ADD COLUMN description TEXT DEFAULT '';
 
 ALTER TABLE proposed_polls ADD COLUMN approved_by_admin boolean DEFAULT false;
+
+CREATE TABLE groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    description TEXT,
+    owner_id INTEGER NOT NULL REFERENCES users(id)
+);
+
+CREATE TABLE group_members (
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role VARCHAR DEFAULT 'member'
+);
+
+CREATE TABLE group_join_requests (
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    accepted BOOLEAN DEFAULT FALSE
+);
+
+-- Если таблица polls уже существует, добавьте это поле:
+ALTER TABLE polls ADD COLUMN group_id INTEGER REFERENCES groups(id);
+
+ALTER TABLE proposed_polls ADD COLUMN group_id INTEGER;

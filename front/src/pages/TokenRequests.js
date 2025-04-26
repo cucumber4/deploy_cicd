@@ -1,87 +1,123 @@
-// src/pages/TokenRequests.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import SidebarLayout from "../components/SidebarLayout";
 import "./TokenRequests.css";
 
 const TokenRequests = () => {
-    const [requests, setRequests] = useState([]);
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate();
+  const [requests, setRequests] = useState([]);
+  const [message, setMessage] = useState("");
+  const [user, setUser] = useState(null);
+  const [agaBalance, setAgaBalance] = useState(null);
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
-    useEffect(() => {
-        fetchRequests();
-    }, []);
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
-    async function fetchRequests() {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get("/api/tokens/token-requests", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setRequests(response.data);
-        } catch (error) {
-            setMessage("Ошибка загрузки запросов");
-        }
+  const fetchRequests = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://127.0.0.1:8000/tokens/token-requests", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRequests(response.data);
+    } catch (error) {
+      setMessage("Failed to load token requests.");
     }
+  };
 
-    async function handleApprove(id) {
-        try {
-            const token = localStorage.getItem("token");
-            await axios.post(`/api/tokens/approve-request/${id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchRequests();
-        } catch (error) {
-            setMessage("Ошибка при одобрении запроса.");
-        }
+  const handleApprove = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://127.0.0.1:8000/tokens/approve-request/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchRequests();
+    } catch (error) {
+      setMessage("Error approving request.");
     }
+  };
 
-    async function handleReject(id) {
-        try {
-            const token = localStorage.getItem("token");
-            await axios.post(`/api/tokens/reject-request/${id}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchRequests();
-        } catch (error) {
-            setMessage("Ошибка при отклонении запроса.");
-        }
+  const handleReject = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`http://127.0.0.1:8000/tokens/reject-request/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchRequests();
+    } catch (error) {
+      setMessage("Error rejecting request.");
     }
+  };
 
-    return (
-        <div className="token-page">
-            <div className="token-container">
-                <h2 className="token-title">💸 Запросы на получение токенов AGA</h2>
+  return (
+    <div className="dashboard-container token-requests-container">
+      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <SidebarLayout
+          user={user}
+          agaBalance={agaBalance}
+          showUserInfo={showUserInfo}
+          setShowUserInfo={setShowUserInfo}
+        />
+      </div>
 
-                {requests.length === 0 ? (
-                    <p className="token-empty">Нет новых запросов</p>
-                ) : (
-                    <ul className="token-list">
-                        {requests.map((req) => (
-                            <li key={req.id} className="token-item">
-                                <p><strong>Пользователь:</strong> {req.nickname}</p>
-                                <p><strong>Email:</strong> {req.email}</p>
-                                <p><strong>Wallet:</strong> {req.wallet}</p>
-                                <p><strong>Количество:</strong> {req.amount} AGA</p>
+      <button
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        className="collapse-btn"
+      >
+        {sidebarCollapsed ? "→" : "←"}
+      </button>
 
-                                <div className="token-buttons">
-                                    <button onClick={() => handleApprove(req.id)} className="approve-button">✅ Одобрить</button>
-                                    <button onClick={() => handleReject(req.id)} className="reject-button">❌ Отклонить</button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+      <div className="main-content token-requests-main">
+        <div className="token-requests-box">
+          <h2 className="token-requests-heading">Token Requests</h2>
 
-                {message && <p className="token-message">{message}</p>}
+          {requests.length === 0 ? (
+            <p className="no-requests">No new requests</p>
+          ) : (
+            <table className="token-requests-table">
+              <thead>
+                  <tr>
+                    <th className="table-cell left">User ID</th>
+                    <th className="table-cell center">Username</th>
+                    <th className="table-cell right" style={{paddingRight: "97px"}}>Actions</th>
+                  </tr>
+              </thead>
 
-                <div className="token-back">
-                    <button className="back-button" onClick={() => navigate(-1)}>← Назад</button>
-                </div>
-            </div>
+              <tbody>
+                  {requests.map((req) => (
+                    <tr key={req.id} className="token-requests-row">
+                      <td className="table-cell left bold">{req.id}</td>
+                      <td className="table-cell center">{req.nickname}</td>
+                      <td className="table-cell right">
+                        <div className="token-requests-actions">
+                          <button
+                            className="token-requests-btn approve"
+                            onClick={() => handleApprove(req.id)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="token-requests-btn reject"
+                            onClick={() => handleReject(req.id)}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+            </table>
+          )}
+
+          {message && <p className="token-requests-message">{message}</p>}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default TokenRequests;

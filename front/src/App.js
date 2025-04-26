@@ -15,9 +15,13 @@ import ProposePoll from "./pages/ProposePoll";
 import ProposalsList from "./pages/ProposalsList";
 import TokenRequests from "./pages/TokenRequests";
 import VoteHistory from "./pages/VoteHistory";
-
+import CreateGroup from "./pages/CreateGroup";
 import LandingPage from "./pages/LandingPage";
-
+import GroupsList from "./pages/GroupsList"; // (или путь где будет файл)
+import GroupJoinRequests from "./pages/GroupJoinRequests"; // (если хочешь список заявок)
+import CreateGroupPoll from "./pages/CreateGroupPoll";
+import BrowseGroups from "./pages/BrowseGroups";
+import GroupMembers from "./pages/GroupMembers";
 
 
 function App() {
@@ -45,8 +49,13 @@ function App() {
                 <Route path="/proposals" element={<ProposalsList />} />
                 <Route path="/token-requests" element={<TokenRequests />} />
                 <Route path="/vote-history" element={<VoteHistory />} />
+                <Route path="/groups/create" element={<CreateGroup />} />
+                <Route path="/groups/list" element={<GroupsList />} />
+                <Route path="/groups/requests" element={<GroupJoinRequests />} />
 
-
+                <Route path="/groups/create-poll" element={<CreateGroupPoll />} />
+                <Route path="/groups/browse" element={<BrowseGroups />} />
+                <Route path="/groups/:group_id/members" element={<GroupMembers />} />
             </Routes>
         </Router>
     );
