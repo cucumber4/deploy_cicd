@@ -52,5 +52,7 @@ def get_current_user_data(user: dict = Depends(get_current_user), db: Session = 
         "last_name": db_user.last_name,
         "email": db_user.email,
         "wallet_address": db_user.wallet_address,
-        "role": db_user.role
+        "role": db_user.role,
+        "avatar_hash": db_user.avatar_hash,  # 👈 ДОБАВЬ ЭТО
     }
+

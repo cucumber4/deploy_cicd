@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 from web3 import Web3
 from db import get_db
 from schemas.user_scheme import User
@@ -224,6 +225,13 @@ VOTING_CONTRACT_ADDRESS = "0x0946E6cBd737764BdbEC76430d030d30c653A7f9"
 
 voting_contract = web3.eth.contract(address=VOTING_CONTRACT_ADDRESS, abi=VOTING_ABI)
 
+
+class ConfirmVoteRequest(BaseModel):
+    poll_id: int
+    candidate: str
+    transaction_hash: str
+
+
 @router.post("/{poll_id}/{candidate}")
 def create_vote_transaction(
         poll_id: int,
@@ -239,7 +247,6 @@ def create_vote_transaction(
 
     user_id = user_db.id
 
-    # ✅ Проверка членства в группе, если голосование привязано к группе
     poll = db.query(Poll).filter(Poll.id == poll_id).first()
     if not poll:
         raise HTTPException(status_code=404, detail="Голосование не найдено")
@@ -282,12 +289,7 @@ def create_vote_transaction(
             'chainId': 11155111
         })
 
-        vote_history = VoteHistory(user_id=user_id, poll_id=poll_id)
-        db.add(vote_history)
-        db.commit()
-        db.refresh(vote_history)
-
-        return {"transaction": tx, "message": "Ваш голос успешно зарегистрирован"}
+        return {"transaction": tx, "message": "Транзакция построена. Подпишите её через MetaMask"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании транзакции: {str(e)}")
@@ -316,3 +318,44 @@ def get_vote_history(user: dict = Depends(get_current_user), db: Session = Depen
         }
         for record in history
     ]
+
+@router.post("/confirm")
+def confirm_vote(
+    data: ConfirmVoteRequest,
+    user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user_address = user["wallet_address"]
+    user_db = db.query(User).filter(User.email == user["sub"]).first()
+    if not user_db:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    user_id = user_db.id
+
+    try:
+        receipt = web3.eth.get_transaction_receipt(data.transaction_hash)
+
+        if not receipt or receipt["status"] != 1:
+            raise HTTPException(status_code=400, detail="Транзакция не подтверждена или не найдена")
+
+        existing_vote = db.query(VoteHistory).filter(
+            VoteHistory.user_id == user_id,
+            VoteHistory.poll_id == data.poll_id
+        ).first()
+
+        if existing_vote:
+            raise HTTPException(status_code=400, detail="Вы уже голосовали в этом голосовании")
+
+        vote_history = VoteHistory(
+            user_id=user_id,
+            poll_id=data.poll_id
+            # candidate убираем
+        )
+        db.add(vote_history)
+        db.commit()
+
+        return {"message": "✅ Голос успешно записан в историю!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при подтверждении: {str(e)}")
+

@@ -84,3 +84,10 @@ CREATE TABLE group_join_requests (
 ALTER TABLE polls ADD COLUMN group_id INTEGER REFERENCES groups(id);
 
 ALTER TABLE proposed_polls ADD COLUMN group_id INTEGER;
+
+ALTER TABLE vote_history DROP COLUMN candidate ;
+
+ALTER TABLE users ADD COLUMN avatar_hash VARCHAR;
+
+
+

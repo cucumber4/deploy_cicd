@@ -1,3 +1,4 @@
+// pages/PollDetail.js
 import "./CreatePoll.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -10,6 +11,7 @@ import "./PollDetail.css";
 const PollDetail = () => {
   const { pollId } = useParams();
   const [poll, setPoll] = useState(null);
+  const [status, setStatus] = useState("idle"); // idle, loading, success, error
   const [message, setMessage] = useState("");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -55,28 +57,34 @@ const PollDetail = () => {
     }
   };
 
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   const vote = async (candidate) => {
     if (!window.ethereum) return alert("Please install MetaMask.");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     const userAddress = await signer.getAddress();
+    const token = localStorage.getItem("token");
 
     try {
+      setStatus("loading");
+      setMessage("Checking token allowance...");
+
       const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
       const allowance = await tokenContract.allowance(userAddress, VOTING_CONTRACT_ADDRESS);
 
       if (allowance < ethers.parseUnits("10", 18)) {
-        setMessage("Approving 10 AGA...");
+        setMessage("Approving 10 AGA tokens...");
         const approveTx = await tokenContract.approve(VOTING_CONTRACT_ADDRESS, ethers.parseUnits("10", 18));
         await approveTx.wait();
-        setMessage("Approved. Sending vote...");
+        setMessage("Approval successful. Preparing vote...");
       }
 
       const res = await axios.post(
         `http://127.0.0.1:8000/votes/${pollId}/${candidate}`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const txData = res.data.transaction;
@@ -89,10 +97,60 @@ const PollDetail = () => {
         data: txData.data,
       });
 
-      setMessage(`Vote submitted successfully! Hash: ${tx.hash}`);
-    } catch (err) {
-      setMessage(`❌ ${err.response?.data?.detail || "Voting failed."}`);
+      setMessage(`Vote submitted! Waiting for blockchain confirmation...`);
+      await tx.wait();
+
+      // Умная проверка транзакции
+      let confirmed = false;
+      let attempts = 5; // попробуем 5 раз
+      for (let i = 0; i < attempts; i++) {
+        try {
+          const receipt = await provider.getTransactionReceipt(tx.hash);
+          if (receipt && receipt.status === 1) {
+            confirmed = true;
+            break;
+          }
+        } catch (e) {
+          console.log(`Attempt ${i + 1}: Transaction not found yet.`);
+        }
+        await sleep(2000); // ждём 2 секунды между попытками
+      }
+
+      if (!confirmed) {
+        throw new Error("Transaction not confirmed on chain after multiple attempts.");
+      }
+
+      // Теперь подтверждаем голос на сервере
+      await axios.post("http://127.0.0.1:8000/votes/confirm",
+  {
+      poll_id: pollId,
+      candidate: candidate,
+      transaction_hash: tx.hash,
+      },
+    {
+        headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
     }
+  }
+);
+
+
+
+      setStatus("success");
+      setMessage(`🎉 Vote confirmed! Hash: ${tx.hash}`);
+
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setMessage(`❌ ${err.response?.data?.detail || err.message || "Voting failed."}`);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -119,58 +177,41 @@ const PollDetail = () => {
                     key={index}
                     className="gradient-button candidate-button"
                     onClick={() => vote(candidate)}
+                    disabled={status === "loading"}
                   >
                     {candidate}
                   </button>
                 ))}
               </div>
 
-              {message && (
+              {status === "loading" && <p>⏳ {message}</p>}
+              {status === "success" && (
                 <div className="message-box">
-                  {message.includes("Hash:") ? (
-                    <>
-                      <p className="message-title">🎉 Vote submitted successfully!</p>
-                      <div className="message-hash-row">
-                        <code className="message-hash">{message.split("Hash:")[1].trim()}</code>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(message.split("Hash:")[1].trim());
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 2000);
-                          }}
-                          className="copy-button"
-                          title="Copy to clipboard"
-                        >
-                          {copied ? <FiCheck size={20} /> : <FiCopy size={20} />}
-                        </button>
-                      </div>
-                      <div className="etherscan-link">
-                        <a
-                          href={`https://sepolia.etherscan.io/tx/${message.split("Hash:")[1].trim()}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View on Etherscan ↗
-                        </a>
-                      </div>
-                      <div className="message-nav-buttons">
-                        <button
-                          onClick={() => (window.location.href = "/dashboard")}
-                          className="nav-button"
-                        >
-                          Back to Dashboard
-                        </button>
-                        <button
-                          onClick={() => (window.location.href = "/vote-history")}
-                          className="nav-button"
-                        >
-                          Check Voting History
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <p>{message}</p>
-                  )}
+                  <p className="message-title">✅ Vote successfully confirmed!</p>
+                  <div className="message-hash-row">
+                    <code className="message-hash">{message.split("Hash:")[1]?.trim()}</code>
+                    <button
+                      onClick={() => copyToClipboard(message.split("Hash:")[1]?.trim())}
+                      className="copy-button"
+                      title="Copy to clipboard"
+                    >
+                      {copied ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                    </button>
+                  </div>
+                  <div className="etherscan-link">
+                    <a
+                      href={`https://sepolia.etherscan.io/tx/${message.split("Hash:")[1]?.trim()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View on Etherscan ↗
+                    </a>
+                  </div>
+                </div>
+              )}
+              {status === "error" && (
+                <div className="message-box error">
+                  <p>{message}</p>
                 </div>
               )}
             </>

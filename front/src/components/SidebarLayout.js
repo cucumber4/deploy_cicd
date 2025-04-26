@@ -63,7 +63,16 @@ const SidebarLayout = ({ children }) => {
             <div className="sidebar">
                 <div className="sidebar-scroll">
                     <img src={agaLogo} alt="Logo" className="logo" />
-                    <div className="user-icon">👤</div>
+                    {user?.avatar_hash ? (
+  <img
+    src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user.avatar_hash}`}
+    alt="Avatar"
+    className="user-avatar"
+  />
+) : (
+  <div className="user-icon">👤</div>
+)}
+
                     <button className="user-info-button" onClick={() => setShowUserInfo(!showUserInfo)}>
                         {showUserInfo ? "Hide Info" : "Show Info"}
                     </button>

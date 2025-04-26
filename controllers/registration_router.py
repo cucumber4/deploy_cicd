@@ -10,6 +10,8 @@ from web3 import Web3
 import string, random
 from dotenv import load_dotenv
 import os
+import hashlib
+
 
 router = APIRouter()
 
@@ -74,6 +76,8 @@ def verify_user(data: VerificationData, db: Session = Depends(get_db)):
 
     user_data = record["user_data"]
     hashed_password = hash_password(user_data["password"])
+    email_hash = hashlib.md5(user_data["email"].strip().lower().encode('utf-8')).hexdigest()
+
     new_user = User(
         nickname=user_data["nickname"],
         first_name=user_data["first_name"],
@@ -81,7 +85,8 @@ def verify_user(data: VerificationData, db: Session = Depends(get_db)):
         email=user_data["email"],
         wallet_address=user_data["wallet_address"],
         password=hashed_password,
-        role="user"
+        role="user",
+        avatar_hash = email_hash
     )
     db.add(new_user)
     db.commit()
