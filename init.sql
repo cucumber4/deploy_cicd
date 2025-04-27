@@ -91,4 +91,7 @@ ALTER TABLE users ADD COLUMN avatar_hash VARCHAR;
 ALTER TABLE proposed_polls ADD COLUMN user_id INTEGER REFERENCES users(id);
 
 
+ALTER TABLE proposed_polls
+ADD COLUMN creator_id INTEGER REFERENCES users(id);
+
 

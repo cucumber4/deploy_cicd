@@ -540,3 +540,32 @@ def search_polls(name: str, db: Session = Depends(get_db)):
     if not polls:
         raise HTTPException(status_code=404, detail="Голосование не найдено")
     return polls
+
+
+@router.get("/group/{group_id}")
+def get_polls_by_group(group_id: int, db: Session = Depends(get_db)):
+    polls = db.query(Poll).filter(Poll.group_id == group_id).all()
+    return [
+        {
+            "id": poll.id,
+            "name": poll.name,
+            "description": poll.description,
+            "active": poll.active,
+        }
+        for poll in polls
+    ]
+
+
+@router.get("/group/{group_id}/polls")
+def get_polls_by_group(group_id: int, db: Session = Depends(get_db)):
+    polls = db.query(Poll).filter(Poll.group_id == group_id).all()
+    return [
+        {
+            "id": poll.id,
+            "name": poll.name,
+            "description": poll.description,
+            "candidates": poll.candidates,
+            "active": poll.active
+        }
+        for poll in polls
+    ]

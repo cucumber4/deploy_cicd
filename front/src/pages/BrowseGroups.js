@@ -1,56 +1,28 @@
-// pages/BrowseGroups.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import SidebarLayout from "../components/SidebarLayout";
 import { useNavigate } from "react-router-dom";
+import SidebarLayout from "../components/SidebarLayout";
 import "./Dashboard.css";
 
 const BrowseGroups = () => {
   const [groups, setGroups] = useState([]);
-  const [joinedGroups, setJoinedGroups] = useState([]);
-  const [requestedGroups, setRequestedGroups] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAllGroups();
-    fetchMyGroups();
-    fetchMyJoinRequests();
+    fetchGroups();
   }, []);
 
-  const fetchAllGroups = async () => {
+  const fetchGroups = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/groups/all");
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://127.0.0.1:8000/groups/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setGroups(res.data);
-    } catch (err) {
-      setMessage("❌ Failed to load groups");
-    }
-  };
-
-  const fetchMyGroups = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://127.0.0.1:8000/groups/my", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const ids = res.data.map((g) => g.id);
-      setJoinedGroups(ids);
-    } catch (err) {
-      console.error("Failed to load my groups");
-    }
-  };
-
-  const fetchMyJoinRequests = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://127.0.0.1:8000/groups/my-requests", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const ids = res.data.map((r) => r.group_id);
-      setRequestedGroups(ids);
-    } catch (err) {
-      console.error("Failed to load my join requests");
+    } catch (error) {
+      console.error("Failed to load groups:", error);
     }
   };
 
@@ -60,16 +32,11 @@ const BrowseGroups = () => {
       await axios.post(`http://127.0.0.1:8000/groups/${groupId}/request-join`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRequestedGroups((prev) => [...prev, groupId]);
-      setMessage("✅ Request sent!");
-      setTimeout(() => setMessage(""), 3000);
+      setMessage("✅ Request to join sent!");
     } catch (error) {
-      setMessage("❌ " + (error.response?.data?.detail || "Failed to send request"));
+      console.error(error);
+      setMessage(`❌ ${error.response?.data?.detail || "Failed to send join request."}`);
     }
-  };
-
-  const isRequestedOrJoined = (groupId) => {
-    return requestedGroups.includes(groupId) || joinedGroups.includes(groupId);
   };
 
   return (
@@ -78,50 +45,37 @@ const BrowseGroups = () => {
         <SidebarLayout />
       </div>
 
-      <button
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="collapse-btn"
-      >
+      <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
         {sidebarCollapsed ? "→" : "←"}
       </button>
 
       <div className="main-content">
         <h2 className="dashboard-heading">Browse All Groups</h2>
 
-        {groups.length === 0 ? (
-          <p>No groups found.</p>
-        ) : (
-          <ul className="polls-list">
-            {groups.map((group) => (
-              <li key={group.id} className="poll-card">
-                <div className="poll-card-inner">
-                  <div style={{ flex: 1 }}>
-                    <p className="poll-name">{group.name}</p>
-                    <p className="poll-description">{group.description}</p>
-                  </div>
-                  {isRequestedOrJoined(group.id) ? (
-                    <button
-                      className="gradient-button"
-                      disabled
-                      style={{ opacity: 0.6, cursor: "not-allowed" }}
-                    >
-                      Requested
-                    </button>
-                  ) : (
-                    <button
-                      className="gradient-button"
-                      onClick={() => requestJoin(group.id)}
-                    >
-                      Request to Join
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        {message && <p style={{ marginBottom: "20px", fontWeight: "bold", color: "#6e8efb" }}>{message}</p>}
 
-        {message && <p className="message">{message}</p>}
+        <ul className="polls-list">
+          {groups.map((group) => (
+            <li key={group.id} className="poll-card">
+              <div className="poll-card-inner">
+                <p
+                  className="poll-name"
+                  style={{ cursor: "pointer", color: "#6e8efb", textDecoration: "underline" }}
+                  onClick={() => navigate(`/groups/${group.id}`)}
+                >
+                  {group.name}
+                </p>
+                <button
+                  className="gradient-button"
+                  style={{ marginLeft: "12px" }}
+                  onClick={() => requestJoin(group.id)}
+                >
+                  ➕ Request to Join
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

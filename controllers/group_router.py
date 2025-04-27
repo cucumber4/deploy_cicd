@@ -164,15 +164,14 @@ def create_group_poll(data: PollWithGroupCreate, user: dict = Depends(get_curren
     if not membership:
         raise HTTPException(status_code=403, detail="Вы не состоите в группе")
 
-      # 👈 импортируем ProposedPoll, не Poll
-
     new_proposal = ProposedPoll(
         name=data.name,
         candidates=data.candidates,
         description=data.description,
         approved_by_admin=False,
         approved=False,
-        group_id=data.group_id  # 👈 сохраняем связь с группой
+        group_id=data.group_id,
+        creator_id=user_in_db.id
     )
 
     db.add(new_proposal)
@@ -180,7 +179,6 @@ def create_group_poll(data: PollWithGroupCreate, user: dict = Depends(get_curren
     db.refresh(new_proposal)
 
     return {"message": "Групповое голосование предложено", "proposal_id": new_proposal.id}
-
 
 
 @router.get("/all")
@@ -237,4 +235,49 @@ def leave_group(group_id: int, user: dict = Depends(get_current_user), db: Sessi
     db.delete(membership)
     db.commit()
     return {"message": "Left the group successfully"}
+
+
+@router.get("/info/{group_id}")
+def get_group_info(group_id: int, db: Session = Depends(get_db)):
+    group = db.query(Group).filter(Group.id == group_id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Группа не найдена")
+
+    admin = db.query(User).filter(User.id == group.owner_id).first()
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Администратор группы не найден")
+
+    return {
+        "id": group.id,
+        "name": group.name,
+        "description": group.description,
+        "admin_nickname": admin.nickname,
+        "admin_first_name": admin.first_name,
+        "admin_last_name": admin.last_name
+    }
+
+
+
+from schemas.user_scheme import User  # ✅ убедись, что импортирован User
+
+@router.get("/{group_id}/members")
+def group_members(group_id: int, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+    group = db.query(Group).filter(Group.id == group_id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Группа не найдена")
+
+    members = db.query(GroupMember, User).join(User, GroupMember.user_id == User.id).filter(GroupMember.group_id == group_id).all()
+
+    return [
+        {
+            "user_id": m.user_id,
+            "nickname": u.nickname,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "role": m.role
+        }
+        for m, u in members
+    ]
+
 

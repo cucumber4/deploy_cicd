@@ -12,3 +12,4 @@ class ProposedPoll(GlobalBase):
     approved_by_admin = Column(Boolean, default=False, nullable=False)
     group_id = Column(Integer, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # 👈 добавили связь с таблицей users
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # ✅ НОВОЕ ПОЛЕ
