@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
+import Notifications from "../components/Notifications";
+
 import {
   AreaChart,
   Area,
@@ -180,8 +182,6 @@ const Dashboard = () => {
   </button>
 </div>
 
-
-
         {searchActive && polls.length > 0 && (
           <div className="search-results">
             <h3 className="dashboard-heading">Search Results</h3>
@@ -203,6 +203,9 @@ const Dashboard = () => {
             </ul>
           </div>
         )}
+
+
+        <Notifications />
 
         <StatisticsChart />
 

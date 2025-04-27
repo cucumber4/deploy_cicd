@@ -11,7 +11,8 @@ from utils.dependencies import is_admin, get_current_user
 from web3 import Web3
 from pydantic import BaseModel
 from utils.email_sender import send_poll_status_email
-from schemas.user_scheme import User  # чтобы достать email
+from schemas.user_scheme import User
+from schemas.notification_scheme import Notification
 import os
 
 router = APIRouter()
@@ -465,17 +466,21 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
         active=True,
         group_id=proposed_poll.group_id
     )
-
     db.add(new_poll)
-    db.commit()
 
-    # НАЙТИ пользователя-предложителя
     proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
     if proposer:
         send_poll_status_email(proposer.email, proposed_poll.name, "approved")
+        new_notification = Notification(
+            user_id=proposer.id,
+            title="✅ Poll Approved",
+            message=f"Your poll '{proposed_poll.name}' has been approved by admin!"
+        )
+        db.add(new_notification)
+
+    db.commit()  # ❗ Теперь только один раз сохраняем всё вместе
 
     return {"message": "Голосование одобрено администратором", "poll_id": proposal_id}
-
 
 
 @router.post("/send-to-contract/{proposal_id}")
@@ -518,14 +523,20 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
 
     proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
 
-    db.delete(proposed_poll)
-    db.commit()
-
     if proposer:
         send_poll_status_email(proposer.email, proposed_poll.name, "rejected")
+        new_notification = Notification(
+            user_id=proposer.id,
+            title="❌ Poll Rejected",
+            message=f"Your poll '{proposed_poll.name}' has been rejected by admin."
+        )
+        db.add(new_notification)
+
+    db.delete(proposed_poll)
+
+    db.commit()  # ❗ один раз сохраняем и уведомление, и удаление
 
     return {"message": "Голосование успешно отклонено"}
-
 
 
 @router.get("/")

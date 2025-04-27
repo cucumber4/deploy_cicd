@@ -94,4 +94,14 @@ ALTER TABLE proposed_polls ADD COLUMN user_id INTEGER REFERENCES users(id);
 ALTER TABLE proposed_polls
 ADD COLUMN creator_id INTEGER REFERENCES users(id);
 
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
 
