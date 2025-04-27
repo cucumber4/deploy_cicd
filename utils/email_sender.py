@@ -25,3 +25,17 @@ def send_verification_email(recipient_email: str, code: str):
         server.send_message(msg)
 
 # send_verification_email('gogoreferenc@gmail.com', '546532')
+
+def send_poll_status_email(recipient_email: str, poll_name: str, status: str):
+    subject = f"Your poll '{poll_name}' has been {status}"
+    body = f"Hello!\n\nYour poll '{poll_name}' has been {status} by the admin.\n\nThank you for using our platform!"
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = SMTP_USER
+    msg["To"] = recipient_email
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USER, SMTP_PASSWORD)
+        server.send_message(msg)
+

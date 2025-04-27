@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ARRAY, Text
+from sqlalchemy import Column, Integer, String, Boolean, ARRAY, Text, ForeignKey
 from db import GlobalBase
 
 class ProposedPoll(GlobalBase):
@@ -10,4 +10,5 @@ class ProposedPoll(GlobalBase):
     candidates = Column(ARRAY(Text), nullable=False)
     approved = Column(Boolean, default=False, nullable=False)
     approved_by_admin = Column(Boolean, default=False, nullable=False)
-    group_id = Column(Integer, nullable=True)  # 👈 добавили group_id
+    group_id = Column(Integer, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # 👈 добавили связь с таблицей users

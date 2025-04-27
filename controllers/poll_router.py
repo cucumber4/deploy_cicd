@@ -10,6 +10,8 @@ from schemas.proposed_poll_scheme import ProposedPoll
 from utils.dependencies import is_admin, get_current_user
 from web3 import Web3
 from pydantic import BaseModel
+from utils.email_sender import send_poll_status_email
+from schemas.user_scheme import User  # чтобы достать email
 import os
 
 router = APIRouter()
@@ -416,10 +418,16 @@ def propose_poll(poll_request: ProposedPollRequest, user: dict = Depends(get_cur
     if len(poll_request.candidates) < 2 or len(poll_request.candidates) > 8:
         raise HTTPException(status_code=400, detail="Количество кандидатов должно быть от 2 до 8")
 
+    # Находим пользователя по кошельку
+    user_db = db.query(User).filter(User.wallet_address == user["wallet_address"]).first()
+    if not user_db:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
     proposed_poll = ProposedPoll(
         name=poll_request.name,
+        description=poll_request.description,
         candidates=poll_request.candidates,
-        description = poll_request.description
+        user_id=user_db.id  # 👈 Берем id из найденного пользователя
     )
 
     db.add(proposed_poll)
@@ -427,6 +435,7 @@ def propose_poll(poll_request: ProposedPollRequest, user: dict = Depends(get_cur
     db.refresh(proposed_poll)
 
     return {"message": "Предложение голосования отправлено на рассмотрение", "poll_id": proposed_poll.id}
+
 
 @router.get("/proposals")
 def get_proposed_polls(user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -447,7 +456,6 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
     if proposed_poll.approved_by_admin:
         raise HTTPException(status_code=400, detail="Голосование уже одобрено")
 
-    # Обновляем статус в БД
     proposed_poll.approved_by_admin = True
 
     new_poll = Poll(
@@ -455,11 +463,16 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
         candidates=proposed_poll.candidates,
         description=proposed_poll.description,
         active=True,
-        group_id=proposed_poll.group_id  # 👈 сохраняем связь
+        group_id=proposed_poll.group_id
     )
 
     db.add(new_poll)
     db.commit()
+
+    # НАЙТИ пользователя-предложителя
+    proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
+    if proposer:
+        send_poll_status_email(proposer.email, proposed_poll.name, "approved")
 
     return {"message": "Голосование одобрено администратором", "poll_id": proposal_id}
 
@@ -503,10 +516,16 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
     if not proposed_poll:
         raise HTTPException(status_code=404, detail="Предложенное голосование не найдено")
 
+    proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
+
     db.delete(proposed_poll)
     db.commit()
 
+    if proposer:
+        send_poll_status_email(proposer.email, proposed_poll.name, "rejected")
+
     return {"message": "Голосование успешно отклонено"}
+
 
 
 @router.get("/")
