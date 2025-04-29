@@ -82,7 +82,10 @@ const GroupJoinRequests = () => {
           {requests.map((req) => (
             <li key={req.request_id} className="poll-card">
               <div className="poll-card-inner">
-                <p className="poll-name">User ID: {req.user_id}</p>
+                <p className="poll-name">
+  👤                   {req.nickname} ({req.first_name} {req.last_name})
+                  </p>
+
                 <button
                   className="gradient-button"
                   onClick={() => acceptRequest(selectedGroupId, req.request_id)}

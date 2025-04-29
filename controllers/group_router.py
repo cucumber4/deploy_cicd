@@ -105,8 +105,23 @@ def get_join_requests(group_id: int, user: dict = Depends(get_current_user), db:
     if not group or group.owner_id != user_in_db.id:
         raise HTTPException(status_code=403, detail="No access")
 
-    requests = db.query(GroupJoinRequest).filter_by(group_id=group_id, accepted=False).all()
-    return [{"request_id": r.id, "user_id": r.user_id} for r in requests]
+    requests = (
+        db.query(GroupJoinRequest, User)
+        .join(User, GroupJoinRequest.user_id == User.id)
+        .filter(GroupJoinRequest.group_id == group_id, GroupJoinRequest.accepted == False)
+        .all()
+    )
+
+    return [
+        {
+            "request_id": req.id,
+            "user_id": user.id,
+            "nickname": user.nickname,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+        for req, user in requests
+    ]
 
 
 @router.post("/{group_id}/accept/{request_id}")
@@ -182,9 +197,34 @@ def create_group_poll(data: PollWithGroupCreate, user: dict = Depends(get_curren
 
 
 @router.get("/all")
-def all_groups(db: Session = Depends(get_db)):
+def all_groups(user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+    user_in_db = db.query(User).filter_by(wallet_address=user["wallet_address"]).first()
+    if not user_in_db:
+        raise HTTPException(status_code=404, detail="User not found")
+
     groups = db.query(Group).all()
-    return [{"id": g.id, "name": g.name, "description": g.description} for g in groups]
+    result = []
+
+    for g in groups:
+        # Проверяем является ли пользователь владельцем группы
+        is_owner = g.owner_id == user_in_db.id
+
+        # Проверяем является ли пользователь участником группы
+        is_member = db.query(GroupMember).filter_by(group_id=g.id, user_id=user_in_db.id).first() is not None
+
+        # Проверяем отправил ли пользователь заявку на вступление
+        requested_join = db.query(GroupJoinRequest).filter_by(group_id=g.id, user_id=user_in_db.id, accepted=False).first() is not None
+
+        result.append({
+            "id": g.id,
+            "name": g.name,
+            "description": g.description,
+            "is_owner": is_owner,
+            "is_member": is_member,
+            "requested_join": requested_join,
+        })
+
+    return result
 
 
 @router.get("/my-requests")
