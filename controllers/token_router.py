@@ -66,7 +66,7 @@ def request_tokens(user: dict = Depends(get_current_user), db: Session = Depends
     db.commit()
     db.refresh(token_request)
 
-    return {"message": "Запрос отправлен. Ожидайте одобрения администратором."}
+    return {"message": "Request sent. Wait for administrator approval."}
 
 
 @router.get("/token-requests")
@@ -108,7 +108,7 @@ def approve_request(request_id: int, user: dict = Depends(is_admin), db: Session
 
     db.commit()
 
-    return {"message": "Токены отправлены!", "tx_hash": web3.to_hex(tx_hash)}
+    return {"message": "Tokens sent!", "tx_hash": web3.to_hex(tx_hash)}
 
 
 @router.post("/reject-request/{request_id}")
@@ -129,4 +129,4 @@ def reject_request(request_id: int, user: dict = Depends(is_admin), db: Session 
 
     db.commit()
 
-    return {"message": "Запрос отклонен"}
+    return {"message": "Request rejected"}

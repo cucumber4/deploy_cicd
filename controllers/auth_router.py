@@ -27,10 +27,10 @@ class UserLogin(BaseModel):
 def login_user(user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
     if not db_user:
-        raise HTTPException(status_code=400, detail="Пользователь не найден")
+        raise HTTPException(status_code=400, detail="User not found")
 
     if not verify_password(user.password, db_user.password):
-        raise HTTPException(status_code=400, detail="Неверный пароль")
+        raise HTTPException(status_code=400, detail="Incorrect password")
 
     # wallet_address в токен
     access_token = create_access_token(
@@ -44,7 +44,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
 def get_current_user_data(user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user["sub"]).first()
     if not db_user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="User not found")
 
     return {
         "nickname": db_user.nickname,

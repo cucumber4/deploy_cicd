@@ -354,7 +354,7 @@ def confirm_vote(
         db.add(vote_history)
         db.commit()
 
-        return {"message": "✅ Голос успешно записан в историю!"}
+        return {"message": "✅ The voice has been successfully recorded in history!"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при подтверждении: {str(e)}")

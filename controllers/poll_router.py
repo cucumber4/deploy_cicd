@@ -262,7 +262,7 @@ def get_db():
 @router.post("/create/")
 def create_poll(poll: PollCreate, db: Session = Depends(get_db), user: dict = Depends(is_admin)):
     if len(poll.candidates) < 2 or len(poll.candidates) > 8:
-        raise HTTPException(status_code=400, detail="Количество кандидатов должно быть от 2 до 8")
+        raise HTTPException(status_code=400, detail="The number of candidates should be from 2 to 8")
 
     wallet_address = CREATOR_ADDRESS  # адрес администратора
 
@@ -281,7 +281,7 @@ def create_poll(poll: PollCreate, db: Session = Depends(get_db), user: dict = De
     db.add(new_poll)
     db.commit()
 
-    return {"message": "Голосование создано", "tx_hash": web3.to_hex(tx_hash)}
+    return {"message": "Poll created", "tx_hash": web3.to_hex(tx_hash)}
 
 
 @router.get("/list/")
@@ -302,7 +302,7 @@ def get_polls_onchain():
 
         return polls
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка получения голосований: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error receiving votes: {str(e)}")
 
 
 @router.get("/polls/status/{poll_id}")
@@ -311,7 +311,7 @@ def get_poll_status(poll_id: int):
         poll_info = contract.functions.polls(poll_id).call()
         return {"id": poll_id, "name": poll_info[0], "active": poll_info[1]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка получения статуса: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error getting status: {str(e)}")
 
 
 @router.get("/vote/status/{poll_id}/{user_address}")
@@ -321,7 +321,7 @@ def get_vote_status(poll_id: int, user_address: str):
         voted = poll_info[3][Web3.to_checksum_address(user_address)]
         return {"user_address": user_address, "has_voted": voted}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка проверки голоса: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Vote verification error: {str(e)}")
 
 
 def get_valid_nonce(wallet_address):
@@ -353,10 +353,10 @@ def open_poll(poll_id: int, user: dict = Depends(is_admin)):
         signed_tx = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
-        return {"message": "Голосование открыто", "tx_hash": web3.to_hex(tx_hash)}
+        return {"message": "Voting is open", "tx_hash": web3.to_hex(tx_hash)}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка открытия голосования: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error opening poll: {str(e)}")
 
 
 @router.post("/close/{poll_id}")
@@ -375,10 +375,10 @@ def close_poll(poll_id: int, user: dict = Depends(is_admin)):
         signed_tx = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
-        return {"message": "Голосование закрыто", "tx_hash": web3.to_hex(tx_hash)}
+        return {"message": "Voting is closed", "tx_hash": web3.to_hex(tx_hash)}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка закрытия голосования: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Poll closing error: {str(e)}")
 
 
 @router.get("/list/onchain/active")
@@ -404,7 +404,7 @@ def get_polls_onchain():
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Ошибка получения голосований: {str(e)}"
+            detail=f"Error receiving votes: {str(e)}"
         )
 
 
@@ -417,12 +417,12 @@ class ProposedPollRequest(BaseModel):
 @router.post("/propose")
 def propose_poll(poll_request: ProposedPollRequest, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if len(poll_request.candidates) < 2 or len(poll_request.candidates) > 8:
-        raise HTTPException(status_code=400, detail="Количество кандидатов должно быть от 2 до 8")
+        raise HTTPException(status_code=400, detail="The number of candidates should be from 2 to 8")
 
     # Находим пользователя по кошельку
     user_db = db.query(User).filter(User.wallet_address == user["wallet_address"]).first()
     if not user_db:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="User not found")
 
     proposed_poll = ProposedPoll(
         name=poll_request.name,
@@ -435,13 +435,13 @@ def propose_poll(poll_request: ProposedPollRequest, user: dict = Depends(get_cur
     db.commit()
     db.refresh(proposed_poll)
 
-    return {"message": "Предложение голосования отправлено на рассмотрение", "poll_id": proposed_poll.id}
+    return {"message": "The vote proposal has been submitted for consideration.", "poll_id": proposed_poll.id}
 
 
 @router.get("/proposals")
 def get_proposed_polls(user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Только администраторы могут просматривать предложения")
+        raise HTTPException(status_code=403, detail="Only administrators can view offers")
 
     proposed_polls = db.query(ProposedPoll).filter(ProposedPoll.approved == False).all()
     return proposed_polls
@@ -452,10 +452,10 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
     proposed_poll = db.query(ProposedPoll).filter(ProposedPoll.id == proposal_id).first()
 
     if not proposed_poll:
-        raise HTTPException(status_code=404, detail="Предложенное голосование не найдено")
+        raise HTTPException(status_code=404, detail="Suggested poll not found")
 
     if proposed_poll.approved_by_admin:
-        raise HTTPException(status_code=400, detail="Голосование уже одобрено")
+        raise HTTPException(status_code=400, detail="The vote has already been approved.")
 
     proposed_poll.approved_by_admin = True
 
@@ -482,7 +482,7 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
 
     db.commit()  # ❗ Теперь только один раз сохраняем всё вместе
 
-    return {"message": "Голосование одобрено администратором", "poll_id": proposal_id}
+    return {"message": "Voting approved by administrator", "poll_id": proposal_id}
 
 
 @router.post("/send-to-contract/{proposal_id}")
@@ -490,7 +490,7 @@ def send_proposed_poll_to_contract(proposal_id: int, db: Session = Depends(get_d
     proposed_poll = db.query(ProposedPoll).filter(ProposedPoll.id == proposal_id, ProposedPoll.approved_by_admin == True).first()
 
     if not proposed_poll:
-        raise HTTPException(status_code=404, detail="Голосование не найдено или не одобрено")
+        raise HTTPException(status_code=404, detail="Voting not found or not approved")
 
     wallet_address = CREATOR_ADDRESS
     nonce = get_valid_nonce(wallet_address)
@@ -510,10 +510,10 @@ def send_proposed_poll_to_contract(proposal_id: int, db: Session = Depends(get_d
         proposed_poll.approved = True
         db.commit()
 
-        return {"message": "Голосование отправлено в смарт-контракт", "tx_hash": web3.to_hex(tx_hash)}
+        return {"message": "Voting sent to smart contract", "tx_hash": web3.to_hex(tx_hash)}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка отправки в контракт: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error sending to contract: {str(e)}")
 
 
 @router.delete("/reject/{proposal_id}")
@@ -521,7 +521,7 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
     proposed_poll = db.query(ProposedPoll).filter(ProposedPoll.id == proposal_id).first()
 
     if not proposed_poll:
-        raise HTTPException(status_code=404, detail="Предложенное голосование не найдено")
+        raise HTTPException(status_code=404, detail="Suggested poll not found")
 
     proposer_id = proposed_poll.user_id or proposed_poll.creator_id
     proposer = db.query(User).filter(User.id == proposer_id).first()
@@ -538,7 +538,7 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
     db.delete(proposed_poll)
     db.commit()  # ❗ один раз сохраняем и уведомление, и удаление
 
-    return {"message": "Голосование успешно отклонено"}
+    return {"message": "The vote was successfully rejected."}
 
 
 
@@ -552,7 +552,7 @@ def get_all_polls(db: Session = Depends(get_db)):
 def search_polls(name: str, db: Session = Depends(get_db)):
     polls = db.query(Poll).filter(Poll.name.ilike(f"%{name}%")).all()
     if not polls:
-        raise HTTPException(status_code=404, detail="Голосование не найдено")
+        raise HTTPException(status_code=404, detail="Voting not found")
     return polls
 
 

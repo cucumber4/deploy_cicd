@@ -52,13 +52,13 @@ temp_registrations = {}
 @router.post("/register")
 def register_user(user: UserRegister, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     if db.query(User).filter(User.wallet_address == user.wallet_address).first():
-        raise HTTPException(status_code=400, detail="Кошелек уже зарегистрирован")
+        raise HTTPException(status_code=400, detail="Wallet is already registered")
 
     code = generate_verification_code()
     temp_registrations[user.email] = {"user_data": user.dict(), "code": code}
     background_tasks.add_task(send_verification_email, user.email, code)
 
-    return {"message": "На вашу почту отправлен код подтверждения"}
+    return {"message": "A confirmation code has been sent to your email."}
 
 
 class VerificationData(BaseModel):
@@ -70,9 +70,9 @@ class VerificationData(BaseModel):
 def verify_user(data: VerificationData, db: Session = Depends(get_db)):
     record = temp_registrations.get(data.email)
     if not record:
-        raise HTTPException(status_code=404, detail="Регистрация не найдена")
+        raise HTTPException(status_code=404, detail="Registration not found")
     if record["code"] != data.code:
-        raise HTTPException(status_code=400, detail="Неверный код подтверждения")
+        raise HTTPException(status_code=400, detail="Invalid verification code")
 
     user_data = record["user_data"]
     hashed_password = hash_password(user_data["password"])
@@ -118,14 +118,14 @@ def verify_user(data: VerificationData, db: Session = Depends(get_db)):
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
         return {
-            "message": "Регистрация подтверждена, 10 AGA начислены!",
+            "message": "Registration confirmed, 10 AGA sent!",
             "tx_hash": web3.to_hex(tx_hash)
         }
 
     except Exception as e:
         db.delete(new_user)
         db.commit()
-        raise HTTPException(status_code=500, detail=f"Ошибка при начислении токенов: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error while crediting tokens: {str(e)}")
 
 
 @router.get("/balance/{wallet_address}")
@@ -134,7 +134,7 @@ def get_balance(wallet_address: str):
         balance = contract.functions.balanceOf(wallet_address).call() / 10 ** 18
         return {"wallet_address": wallet_address, "balance": balance}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка при получении баланса: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error while getting balance: {str(e)}")
 
 
 password_reset_codes = {}
@@ -148,13 +148,13 @@ class ForgotPasswordRequest(BaseModel):
 def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь с таким email не найден")
+        raise HTTPException(status_code=404, detail="User with this email not found")
 
     code = generate_verification_code()
     password_reset_codes[request.email] = code
     background_tasks.add_task(send_verification_email, request.email, code)
 
-    return {"message": "Код для сброса пароля отправлен на email"}
+    return {"message": "Password reset code sent to email"}
 
 
 class ResetPasswordRequest(BaseModel):
@@ -180,4 +180,4 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
 
     del password_reset_codes[request.email]
 
-    return {"message": "Пароль успешно обновлен"}
+    return {"message": "Password updated successfully"}
