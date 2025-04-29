@@ -118,7 +118,7 @@ def verify_user(data: VerificationData, db: Session = Depends(get_db)):
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
         return {
-            "message": "Registration confirmed, 10 AGA sent!",
+            "message": "Registration confirmed, 100 AGA sent!",
             "tx_hash": web3.to_hex(tx_hash)
         }
 
