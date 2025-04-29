@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from db import SessionLocal
+from schemas.notification_scheme import Notification
 from schemas.user_scheme import User
 from schemas.token_request_scheme import TokenRequest
 from utils.dependencies import get_current_user, is_admin
@@ -95,6 +96,14 @@ def approve_request(request_id: int, user: dict = Depends(is_admin), db: Session
     tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
     request.status = "approved"
+
+    new_notification = Notification(
+        user_id=request.user_id,
+        title="✅ Token Request Approved",
+        message="Your request for 10 AGA tokens has been approved and tokens have been sent!"
+    )
+    db.add(new_notification)
+
     db.commit()
 
     return {"message": "Токены отправлены!", "tx_hash": web3.to_hex(tx_hash)}
@@ -107,6 +116,14 @@ def reject_request(request_id: int, user: dict = Depends(is_admin), db: Session 
         raise HTTPException(status_code=404, detail="Запрос не найден или уже обработан")
 
     request.status = "rejected"
+
+    new_notification = Notification(
+        user_id=request.user_id,
+        title="❌ Token Request Rejected",
+        message="Your request for 10 AGA tokens has been rejected by the administrator."
+    )
+    db.add(new_notification)
+
     db.commit()
 
     return {"message": "Запрос отклонен"}
