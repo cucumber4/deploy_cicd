@@ -6,20 +6,28 @@ import "./Dashboard.css";
 
 const BrowseGroups = () => {
   const [groups, setGroups] = useState([]);
+  const [myGroups, setMyGroups] = useState([]);
+  const [myRequests, setMyRequests] = useState([]);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchGroups();
+    fetchData();
   }, []);
 
-  const fetchGroups = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://127.0.0.1:8000/groups/all", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setGroups(res.data);
+
+      const [groupsRes, myGroupsRes, myRequestsRes] = await Promise.all([
+        axios.get("http://127.0.0.1:8000/groups/all", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://127.0.0.1:8000/groups/my", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://127.0.0.1:8000/groups/my-requests", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      setGroups(groupsRes.data);
+      setMyGroups(myGroupsRes.data);
+      setMyRequests(myRequestsRes.data);
     } catch (error) {
       console.error("Failed to load groups:", error);
     }
@@ -32,10 +40,19 @@ const BrowseGroups = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("✅ Request to join sent!");
+      fetchData(); // обновить данные после отправки запроса
     } catch (error) {
       console.error(error);
       setMessage(`❌ ${error.response?.data?.detail || "Failed to send join request."}`);
     }
+  };
+
+  const isMyGroup = (groupId) => {
+    return myGroups.some((g) => g.id === groupId);
+  };
+
+  const hasRequested = (groupId) => {
+    return myRequests.some((r) => r.group_id === groupId);
   };
 
   return (
@@ -61,13 +78,20 @@ const BrowseGroups = () => {
               >
                 {group.name}
               </p>
-              <button
-                className="gradient-button"
-                style={{ marginLeft: "12px" }}
-                onClick={() => requestJoin(group.id)}
-              >
-                ➕ Request to Join
-              </button>
+
+              {isMyGroup(group.id) ? (
+                <span style={{ marginLeft: "12px", color: "green", fontWeight: "bold" }}>✅ Member</span>
+              ) : hasRequested(group.id) ? (
+                <span style={{ marginLeft: "12px", color: "orange", fontWeight: "bold" }}>⏳ Request Sent</span>
+              ) : (
+                <button
+                  className="gradient-button"
+                  style={{ marginLeft: "12px" }}
+                  onClick={() => requestJoin(group.id)}
+                >
+                  ➕ Request to Join
+                </button>
+              )}
             </div>
           </li>
         ))}
