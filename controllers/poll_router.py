@@ -468,7 +468,9 @@ def approve_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user:
     )
     db.add(new_poll)
 
-    proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
+    proposer_id = proposed_poll.user_id or proposed_poll.creator_id
+    proposer = db.query(User).filter(User.id == proposer_id).first()
+
     if proposer:
         send_poll_status_email(proposer.email, proposed_poll.name, "approved")
         new_notification = Notification(
@@ -521,7 +523,8 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
     if not proposed_poll:
         raise HTTPException(status_code=404, detail="Предложенное голосование не найдено")
 
-    proposer = db.query(User).filter(User.id == proposed_poll.user_id).first()
+    proposer_id = proposed_poll.user_id or proposed_poll.creator_id
+    proposer = db.query(User).filter(User.id == proposer_id).first()
 
     if proposer:
         send_poll_status_email(proposer.email, proposed_poll.name, "rejected")
@@ -533,10 +536,10 @@ def reject_proposed_poll(proposal_id: int, db: Session = Depends(get_db), user: 
         db.add(new_notification)
 
     db.delete(proposed_poll)
-
     db.commit()  # ❗ один раз сохраняем и уведомление, и удаление
 
     return {"message": "Голосование успешно отклонено"}
+
 
 
 @router.get("/")
