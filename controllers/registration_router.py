@@ -101,7 +101,7 @@ def verify_user(data: VerificationData, db: Session = Depends(get_db)):
         # gasPrice на 10% для ускорения транзакции
         gas_price = int(gas_price * 1.1)
 
-        tx = contract.functions.transfer(new_user.wallet_address, 10 * 10 ** 18).build_transaction({
+        tx = contract.functions.transfer(new_user.wallet_address, 100 * 10 ** 18).build_transaction({
             'from': CREATOR_ADDRESS,
             'gas': 100000,
             'gasPrice': gas_price,
