@@ -39,3 +39,20 @@ def send_poll_status_email(recipient_email: str, poll_name: str, status: str):
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.send_message(msg)
 
+
+def send_token_request_status_email(recipient_email: str, status: str):
+    subject = "AGA Token Request Status"
+    if status == "approved":
+        body = "Hello!\n\nYour request for 10 AGA tokens has been approved! The tokens have been sent to your wallet.\n\nThank you for using our platform!"
+    else:
+        body = "Hello!\n\nUnfortunately, your request for 10 AGA tokens has been rejected by the administrator.\n\nThank you for using our platform."
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = SMTP_USER
+    msg["To"] = recipient_email
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USER, SMTP_PASSWORD)
+        server.send_message(msg)

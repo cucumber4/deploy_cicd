@@ -5,6 +5,7 @@ from schemas.notification_scheme import Notification
 from schemas.user_scheme import User
 from schemas.token_request_scheme import TokenRequest
 from utils.dependencies import get_current_user, is_admin
+from utils.email_sender import send_token_request_status_email
 from web3 import Web3
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -96,6 +97,7 @@ def approve_request(request_id: int, user: dict = Depends(is_admin), db: Session
     tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
     request.status = "approved"
+    send_token_request_status_email(request.user.email, "approved")
 
     new_notification = Notification(
         user_id=request.user_id,
@@ -116,6 +118,7 @@ def reject_request(request_id: int, user: dict = Depends(is_admin), db: Session 
         raise HTTPException(status_code=404, detail="Запрос не найден или уже обработан")
 
     request.status = "rejected"
+    send_token_request_status_email(request.user.email, "rejected")
 
     new_notification = Notification(
         user_id=request.user_id,
