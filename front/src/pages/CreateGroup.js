@@ -33,7 +33,6 @@ const CreateGroup = () => {
 
   return (
     <div className="poll-form-container" style={{ marginTop: "20px", marginBottom: "40px" }}>
-      <h2 className="poll-form-heading">Create a Group</h2>
       <form onSubmit={handleSubmit} className="poll-form">
         <input
           type="text"

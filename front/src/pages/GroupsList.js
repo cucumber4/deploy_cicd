@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
+
 const GroupsList = () => {
   const [groups, setGroups] = useState([]);
   const navigate = useNavigate();
@@ -26,9 +27,6 @@ const GroupsList = () => {
 
   return (
     <div style={{ width: "100%", marginBottom: "40px" }}>
-      <h2 className="dashboard-heading" style={{ textAlign: "center", marginBottom: "30px" }}>
-        My Groups
-      </h2>
 
       <ul className="polls-list" style={{ maxWidth: "900px", margin: "0 auto" }}>
         {groups.length === 0 ? (

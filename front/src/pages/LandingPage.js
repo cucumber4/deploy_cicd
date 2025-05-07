@@ -47,20 +47,20 @@ const LandingPage = () => {
 
                 <div className="stats-bar">
                     <div className="stat-item">
-                        <h2>34</h2>
-                        <p>Years of Experience</p>
+                        <h2>95%</h2>
+                        <p>More Secure Than Centralized Voting</p>
                     </div>
                     <div className="stat-item">
-                        <h2>99%</h2>
-                        <p>Customer Satisfaction</p>
+                        <h2>0%</h2>
+                        <p>Risk of Data Tampering</p>
                     </div>
                     <div className="stat-item">
-                        <h2>184</h2>
-                        <p>Team Members</p>
+                        <h2>0 ETH</h2>
+                        <p>	Cost to Vote</p>
                     </div>
                     <div className="stat-item">
-                        <h2>541</h2>
-                        <p>Projects Completed</p>
+                        <h2>100%</h2>
+                        <p>Free and Public</p>
                     </div>
 
                 </div>
@@ -68,7 +68,7 @@ const LandingPage = () => {
             </div>
 
             {/* Security Features Section */}
-            <div className="security-section">
+            <div className="security-section" id="security">
                 <div className="security-content">
                     <div className="left-side">
                         <img src={securityIcon} alt="Security Illustration" className="security-image" />
@@ -82,15 +82,15 @@ const LandingPage = () => {
                             <div className="feature-box">
                                 <span className="checkmark">✔</span>
                                 <div>
-                                    <h3>Blockchain Security</h3>
-                                    <p>Our system ensures end-to-end encryption, immutability, and transparency in every vote cast. Each vote is securely recorded on the blockchain, making it tamper-proof and verifiable by anyone while maintaining voter anonymity. This guarantees election integrity and trust in the system.Our system ensures end-to-end encryption, immutability, and transparency in every vote cast.</p>
+                                    <h3>Blockchain-Powered Voting</h3>
+                                    <p>Every vote is securely recorded on the Ethereum blockchain, making it impossible to tamper with or delete. This ensures full transparency and trust — anyone can verify the results, but no one can alter them. All voting happens directly from the user's wallet, not through a centralized system.</p>
                                 </div>
                             </div>
                             <div className="feature-box">
                                 <span className="checkmark">✔</span>
                                 <div>
-                                    <h3>Fraud Prevention</h3>
-                                    <p>We implement multi-layer authentication, including biometric verification, cryptographic keys, and smart contract validation to prevent fraudulent activities. Decentralized validation eliminates risks of vote manipulation, ensuring a fair and auditable election process.</p>
+                                    <h3>Free & Secure Participation</h3>
+                                    <p>Voting is completely free. AGA tokens are used to confirm participation and prevent spam — but they are not real money and have no monetary value. Everyone receives tokens automatically when registering or requesting them, so every user can vote fairly and securely without cost.</p>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +99,7 @@ const LandingPage = () => {
             </div>
 
             {/* How It Works Section */}
-            <div className="how-it-works">
+            <div className="how-it-works" id="how">
                 <h2 className="how-title">How It Works?</h2>
                 <p className="how-description">
                     Our platform allows users to propose votes, which are then reviewed and made available for all members.
@@ -111,7 +111,7 @@ const LandingPage = () => {
                         <img src={how1} alt="Create a Vote" />
                         <button className="step-btn">Create a Vote</button>
                         <div className="step-text">
-                            <p>Any user can suggest a new voting topic.</p>
+                            <p>Any user can suggest a new voting topic and create groups.</p>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@ const LandingPage = () => {
                         <img src={how3} alt="Open Voting" />
                         <button className="step-btn">Open Voting</button>
                         <div className="step-text">
-                            <p>Users can vote and leave comments.</p>
+                            <p>Users can propose their own polls and vote in them.</p>
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@ const LandingPage = () => {
             </div>
 
             {/* use case */}
-            <div className="use-cases-section">
+            <div className="use-cases-section" id="usecases">
                 <h2 className="section-title">Where Can It Be Used?</h2>
                 <p className="section-description">
                     Our platform is useful in various areas where trust and transparency are essential:
@@ -181,62 +181,78 @@ const LandingPage = () => {
             </div>
 
             {/*how to register */}
-            <div className="register-section">
-      <h2 className="register-title">How to Register</h2>
-      <p className="register-subtitle">To participate, follow these steps:</p>
+            <div className="register-section" id="register">
+              <h2 className="register-title">How to Register</h2>
+              <p className="register-subtitle">To participate, follow these steps:</p>
 
-      <div className="register-steps">
-        {/* Step 1 */}
-        <div className="step">
-          <img src={metamaskLogo} alt="MetaMask" className="step-img" />
-          <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" className="step-link">
-            MetaMask
-          </a>
-          <p className="step-text">Create a MetaMask wallet for secure authentication.</p>
-        </div>
+              <div className="register-steps">
+                {/* Step 1 */}
+                <div className="step">
+                  <img src={metamaskLogo} alt="MetaMask" className="step-img" />
+                  <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" className="step-link">
+                    MetaMask
+                  </a>
+                  <p className="step-text">Create a MetaMask wallet for secure authentication.</p>
+                </div>
 
-        <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
+                <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
 
-        {/* Step 2 */}
-        <div className="step">
-          <img src={registerImg} alt="Register Page" className="step-img" />
-          <a href="/register" className="step-link">Registration Page</a>
-          <p className="step-text">Sign up to get access.</p>
-        </div>
+                {/* Step 2 */}
+                <div className="step">
+                  <img src={registerImg} alt="Register Page" className="step-img" />
+                  <a href="/register" className="step-link">Registration Page</a>
+                  <p className="step-text">Sign up to get access.</p>
+                </div>
 
-        <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
+                <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
 
-        {/* Step 3 */}
-        <div className="step">
-          <img src={walletAddressImg} alt="Wallet Address" className="step-img" />
-          <span className="step-link">Enter Wallet Address</span>
-          <p className="step-text">Your unique ID for voting.</p>
-        </div>
+                {/* Step 3 */}
+                <div className="step">
+                  <img src={walletAddressImg} alt="Wallet Address" className="step-img" />
+                  <span className="step-link">Enter Wallet Address</span>
+                  <p className="step-text">Your unique ID for voting.</p>
+                </div>
 
-        <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
+                <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
 
-        {/* Step 4 */}
-        <div className="step">
-          <img src={lockImg} alt="Secure Account" className="step-img" />
-          <span className="step-link">Set Up Account</span>
-          <p className="step-text">Create a username & password.</p>
-        </div>
+                {/* Step 4 */}
+                <div className="step">
+                  <img src={lockImg} alt="Secure Account" className="step-img" />
+                  <span className="step-link">Set Up Account</span>
+                  <p className="step-text">Create a username & password.</p>
+                </div>
 
-        <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
+                <img src={arrowIcon} alt="Arrow" className="arrow-icon" />
 
-        {/* Step 5 */}
-        <div className="step">
-          <img src={confirm} alt="Confirmation" className="step-img" />
-          <span className="step-link">Confirm & Start Voting</span>
-          <p className="step-text">Access all features instantly.</p>
-        </div>
-      </div>
+                {/* Step 5 */}
+                <div className="step">
+                  <img src={confirm} alt="Confirmation" className="step-img" />
+                  <span className="step-link">Confirm & Start Voting</span>
+                  <p className="step-text">Access all features instantly.</p>
+                </div>
+              </div>
 
-      <p className="register-footer">
-        Once registered, you can vote, propose topics, leave comments, and track your voting history. <br />
-        <strong>Join us in shaping the future of fair and transparent voting!</strong>
-      </p>
+              <p className="register-footer">
+                Once registered, you can vote, propose topics, create groups, and track your voting history. <br />
+                <strong>Join us in shaping the future of fair and transparent voting!</strong>
+              </p>
+            </div>
+
+            <div className="contact-section" id="contact">
+  <h2 className="contact-title-gradient">Have a problem or new ideas?</h2>
+  <p className="contact-subtitle">We'd love to hear from you. Reach out anytime.</p>
+
+  <div className="contact-box">
+    <div className="contact-left">
+      <p className={"p-contact"}>Email: <a href="mailto:aga.voting.project@gmail.com">aga.voting.project@gmail.com</a></p>
+      <p className={"p-contact"}>Telegram: <a href="https://t.me/yourprojectchat" target="_blank" rel="noreferrer">@yourprojectchat</a></p>
     </div>
+    <div className="contact-right">
+      <p className={"p-contact"}>Feel free to suggest features, report issues, or share feedback — we’re always improving!</p>
+    </div>
+  </div>
+</div>
+
         </div>
     );
 };

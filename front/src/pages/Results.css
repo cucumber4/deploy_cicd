@@ -41,15 +41,14 @@
 
 .results-search-input {
   flex-grow: 1;
-  padding: 12px 16px;
-  border-radius: 20px;
+  padding:16px;
+  border-radius: 7px;
   border: 2px solid #ccc;
   outline: none;
   background: #fff;
   font-size: 16px;
   color: #333;
   width: 100%;
-  box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.1);
 }
 
 .results-loading,
@@ -62,13 +61,15 @@
 }
 
 .results-table-wrapper {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: hidden; /* prevent scroll */
 }
 
 .results-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 10px;
+  table-layout: auto; /* allow dynamic column resizing */
+  font-size: 14px;
 }
 
 .results-table thead tr {
@@ -160,4 +161,90 @@
 
 .results-card-votes {
   padding-left: 40px;
+}
+
+@media (max-width: 600px) {
+  .results-table th,
+  .results-table td {
+    padding: 8px;
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+
+  .results-box {
+    padding: 20px;
+  }
+
+  .results-heading {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .results-search-input {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .results-card {
+    grid-template-columns: 1fr; /* Stack everything vertically */
+    font-size: 14px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .results-card-title,
+  .results-card-desc {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .results-card-candidates,
+  .results-card-votes {
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .results-card-votes {
+    padding-left: 0;
+  }
+
+  .results-search-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .results-table thead tr {
+    font-size: 14px;
+  }
+
+  .results-table th {
+    padding: 10px 12px;
+  }
+
+  .results-content,
+  .results-box {
+    padding: 16px !important; /* reduce padding */
+    box-sizing: border-box;
+  }
+
+  .results-table-wrapper {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .results-table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 8px;
+    word-break: break-word;
+  }
+
 }

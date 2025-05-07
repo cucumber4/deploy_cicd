@@ -689,3 +689,25 @@
   margin: 10px auto;
   object-fit: cover;
 }
+
+
+.sidebar-link.gradient-button {
+  background: linear-gradient(90deg, #6e8efb 0%, #a777e3 100%);
+  color: white;
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 14px 18px;
+}
+
+/*.sidebar-button {*/
+/*    background: linear-gradient(90deg, #6e8efb, #a777e3);*/
+/*    border: none;*/
+/*    color: white;*/
+/*    font-size: 16px;*/
+/*    margin: 8px 0;*/
+/*    padding: 14px 18px;*/
+/*    border-radius: 30px;*/
+/*    cursor: pointer;*/
+/*    width: 90%;*/
+/*    text-align: center;*/
+/*}*/

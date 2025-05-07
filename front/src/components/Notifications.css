@@ -77,3 +77,7 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
+
+.gradient-button.delete-button {
+  background: linear-gradient(135deg, #ff758c, #ff7eb3);
+}

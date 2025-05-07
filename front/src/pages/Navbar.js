@@ -28,12 +28,11 @@ const Navbar = () => {
         <img src={logo} alt="Logo" className="logo" />
       </div>
       <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/security">Security</Link></li>
-        <li><Link to="/how-it-works">How It Works?</Link></li>
-        <li><Link to="/elections">Elections</Link></li>
-        <li><Link to="/contact">Contact</Link></li>
-      </ul>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#usecases">Use Cases</a></li>
+          <li><a href="#register">Registration instruction</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
       <div className="auth-links">
       <button className="login-btn" onClick={() => navigate("/login")}>
           Log in

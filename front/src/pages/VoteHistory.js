@@ -3,6 +3,7 @@ import axios from "axios";
 import SidebarLayout from "../components/SidebarLayout";
 import "../pages/Dashboard.css";
 import "./VoteHistory.css";
+import {FaBars, FaTimes} from "react-icons/fa";
 
 const VoteHistory = () => {
   const [history, setHistory] = useState([]);
@@ -10,7 +11,8 @@ const VoteHistory = () => {
   const [onchainPolls, setOnchainPolls] = useState([]);
   const [onchainLoading, setOnchainLoading] = useState(true);
   const [loadingDots, setLoadingDots] = useState(".");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+
 
   useEffect(() => {
     if (!onchainLoading) return;
@@ -21,6 +23,17 @@ const VoteHistory = () => {
 
     return () => clearInterval(interval);
   }, [onchainLoading]);
+
+  useEffect(() => {
+  const handleResize = () => {
+    setSidebarCollapsed(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -65,7 +78,7 @@ const VoteHistory = () => {
       </div>
 
       <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
-        {sidebarCollapsed ? "→" : "←"}
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content" style={{ padding: "40px", width: "100%" }}>
@@ -75,6 +88,7 @@ const VoteHistory = () => {
           {history.length === 0 ? (
             <p style={{ textAlign: "center" }}>You haven’t participated in any polls yet.</p>
           ) : (
+              <div className="vote-history-table-wrapper">
             <table className="vote-history-table">
               <thead>
                 <tr style={{ background: "#f4f4f4" }}>
@@ -121,6 +135,7 @@ const VoteHistory = () => {
                 })}
               </tbody>
             </table>
+                </div>
           )}
         </div>
       </div>

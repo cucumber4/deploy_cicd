@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
-import { FaVoteYea, FaLock } from "react-icons/fa";
+import { FaVoteYea, FaLock, FaBars, FaTimes } from "react-icons/fa";
 import "../pages/Dashboard.css";
 import "./PollsList.css";
 
@@ -12,7 +12,9 @@ const PollsList = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingStatuses, setLoadingStatuses] = useState(true);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
@@ -21,10 +23,19 @@ const PollsList = () => {
     link.href = "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
-    return () => {
-      document.head.removeChild(link);
-    };
+    return () => document.head.removeChild(link);
   }, []);
+
+  useEffect(() => {
+  const handleResize = () => {
+    setSidebarCollapsed(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   useEffect(() => {
     async function fetchPolls() {
@@ -70,6 +81,11 @@ const PollsList = () => {
     navigate(`/vote/${pollId}`);
   };
 
+  const filteredPolls = polls.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="dashboard-container pollslist-font">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
@@ -77,7 +93,7 @@ const PollsList = () => {
       </div>
 
       <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
-        {sidebarCollapsed ? "→" : "←"}
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content pollslist-content">
@@ -87,13 +103,26 @@ const PollsList = () => {
             <span className="pollslist-count">Total number of polls: {polls.length}</span>
           </div>
 
+          {/* 🔍 Search Bar */}
+          <div className="results-search-wrapper" style={{ maxWidth: "800px", marginBottom: "30px" }}>
+            <div className="results-search-bar">
+              <input
+                type="text"
+                placeholder="Search polls by name or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="results-search-input"
+              />
+            </div>
+          </div>
+
           {loading || loadingStatuses ? (
             <p className="pollslist-loading">Loading polls...</p>
-          ) : polls.length === 0 ? (
-            <p className="pollslist-empty">No polls available.</p>
+          ) : filteredPolls.length === 0 ? (
+            <p className="pollslist-empty">No matching polls found.</p>
           ) : (
             <div className="pollslist-items">
-              {polls.map((poll, index) => {
+              {filteredPolls.map((poll, index) => {
                 const isHover = index === hoveredIndex;
                 const isActive = poll.active;
 
@@ -127,9 +156,7 @@ const PollsList = () => {
             </div>
           )}
 
-          {message && (
-            <p className="pollslist-error">{message}</p>
-          )}
+          {message && <p className="pollslist-error">{message}</p>}
         </div>
       </div>
     </div>

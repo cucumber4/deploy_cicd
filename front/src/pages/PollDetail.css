@@ -97,9 +97,9 @@
 
 .message-hash {
   background: #eee;
-  padding: 10px 12px;
+  padding: 7px 1px;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   word-break: break-all;
   max-width: calc(100% - 60px);
   flex: 1;

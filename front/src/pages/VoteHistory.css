@@ -54,3 +54,36 @@
   color: darkred;
   font-weight: 600;
 }
+
+.vote-history-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.vote-history-table {
+  width: 100%;
+  table-layout: auto; /* allows columns to shrink */
+  font-size: 14px;
+  border-collapse: collapse;
+  word-break: break-word;
+}
+
+@media (max-width: 600px) {
+  .vote-history-container {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .vote-history-table {
+    width: 100%;
+    font-size: 14px;
+    min-width: unset; /* remove fixed width to allow flexibility */
+    table-layout: auto;
+    word-break: break-word;
+  }
+
+  .vote-history-thtd {
+    padding: 10px;
+  }
+}

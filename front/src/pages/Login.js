@@ -65,9 +65,13 @@ const Login = () => {
 
                     {message && <p className="message">{message}</p>}
 
-                    <p className="register-text">
-                        Don't have an account yet? <Link to="/register" className="register-link">Register</Link>
-                    </p>
+                        <p className="register-text">
+                            <Link to="/forgot-password" className="register-link">Forgot Password?</Link>
+                        </p>
+
+                        <p className="register-text">
+                            Don't have an account yet? <Link to="/register" className="register-link">Register</Link>
+                        </p>
                 </div>
             </div>
         </div>

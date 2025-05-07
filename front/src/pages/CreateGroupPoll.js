@@ -4,6 +4,7 @@ import axios from "axios";
 import SidebarLayout from "../components/SidebarLayout";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
+import {FaBars, FaTimes} from "react-icons/fa";
 
 const CreateGroupPoll = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -84,12 +85,10 @@ const CreateGroupPoll = () => {
         <SidebarLayout />
       </div>
 
-      <button
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="collapse-btn"
-      >
-        {sidebarCollapsed ? "→" : "←"}
+      <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
+
 
       <div className="main-content page-centered">
         <div className="poll-form-container">
@@ -141,11 +140,11 @@ const CreateGroupPoll = () => {
                 />
                 {formData.candidates.length > 2 && (
                   <button
-                    type="button"
-                    onClick={() => removeCandidate(index)}
-                    style={{ background: "red", color: "white", border: "none", borderRadius: "8px", padding: "8px" }}
+                      type="button"
+                      onClick={() => removeCandidate(index)}
+                      className="remove-candidate-btn"
                   >
-                    X
+                    −
                   </button>
                 )}
               </div>
@@ -158,7 +157,7 @@ const CreateGroupPoll = () => {
                 className="gradient-button"
                 style={{ marginBottom: "20px" }}
               >
-                ➕ Add Candidate
+                + Add Candidate
               </button>
             )}
 

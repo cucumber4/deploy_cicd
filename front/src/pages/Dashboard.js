@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { FaVoteYea, FaUsers, FaPoll, FaInfoCircle } from "react-icons/fa";
 import "./Dashboard.css";
-import { FaBell, FaPlus, FaFolderOpen, FaInbox, FaSearch } from "react-icons/fa";
+import { FaBell, FaPlus, FaFolderOpen, FaInbox, FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import CreateGroup from "./CreateGroup";
 import GroupsList from "./GroupsList";
 import GroupJoinRequests from "./GroupJoinRequests";
@@ -22,7 +22,8 @@ const Dashboard = () => {
   const [polls, setPolls] = useState([]);
   const [searchActive, setSearchActive] = useState(false);
   const [latestPolls, setLatestPolls] = useState([]);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+
   const [mostVotedPoll, setMostVotedPoll] = useState(null);
   const [allOpenPolls, setAllOpenPolls] = useState([]);
   const [dummyData, setDummyData] = useState([]);
@@ -36,6 +37,17 @@ const Dashboard = () => {
     fetchOpenPolls();
     fetchStatistics();
   }, []);
+
+  useEffect(() => {
+  const handleResize = () => {
+    setSidebarCollapsed(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   const fetchOpenPolls = async () => {
     try {
@@ -86,7 +98,7 @@ const Dashboard = () => {
 
   const StatisticsChart = () => (
     <div className="chart-container">
-      <h3 className="dashboard-heading">Ballots Submitted By Date</h3>
+      <h3 className="dashboard-heading">Votes Submitted By Date</h3>
       <ResponsiveContainer width="100%" height={250}>
         <AreaChart data={dummyData}>
           <defs>
@@ -154,7 +166,7 @@ const Dashboard = () => {
       </div>
 
       <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
-        {sidebarCollapsed ? "→" : "←"}
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content">

@@ -7,13 +7,15 @@ import { useParams } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
 import { FiCopy, FiCheck } from "react-icons/fi";
 import "./PollDetail.css";
+import {FaBars, FaTimes} from "react-icons/fa";
 
 const PollDetail = () => {
   const { pollId } = useParams();
   const [poll, setPoll] = useState(null);
   const [status, setStatus] = useState("idle"); // idle, loading, success, error
   const [message, setMessage] = useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+
   const [copied, setCopied] = useState(false);
 
   const TOKEN_ADDRESS = "0x024b770fd5E43258363651B5545efbf080d0775F";
@@ -45,6 +47,16 @@ const PollDetail = () => {
   useEffect(() => {
     fetchPoll();
   }, []);
+  useEffect(() => {
+  const handleResize = () => {
+    setSidebarCollapsed(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   const fetchPoll = async () => {
     try {
@@ -160,7 +172,7 @@ const PollDetail = () => {
       </div>
 
       <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
-        {sidebarCollapsed ? "→" : "←"}
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content page-centered">
@@ -207,6 +219,20 @@ const PollDetail = () => {
                       View on Etherscan ↗
                     </a>
                   </div>
+                  <div className="message-nav-buttons">
+                         <button
+                           onClick={() => (window.location.href = "/dashboard")}
+                           className="nav-button"
+                         >
+                           Back to Dashboard
+                         </button>
+                         <button
+                           onClick={() => (window.location.href = "/vote-history")}
+                           className="nav-button"
+                         >
+                           Check Voting History
+                         </button>
+                       </div>
                 </div>
               )}
               {status === "error" && (

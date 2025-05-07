@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Notifications.css";
+import { FaTrash } from "react-icons/fa";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -75,11 +76,10 @@ const Notifications = () => {
                   <p className="poll-name">{n.title}</p>
                   <p className="poll-description">{n.message}</p>
                   <button
-                    className="gradient-button"
-                    style={{ backgroundColor: "#ff4d4f", marginTop: "10px" }}
+                    className="gradient-button delete-button"
                     onClick={() => deleteNotification(n.id)}
                   >
-                    🗑️ Delete
+                    <FaTrash style={{ marginRight: "6px" }} /> Delete
                   </button>
                 </div>
               </li>

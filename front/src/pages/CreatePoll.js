@@ -6,6 +6,7 @@ import "../pages/Dashboard.css";
 import { FiCopy, FiCheck } from "react-icons/fi";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./CreatePoll.css";
+import {FaBars, FaTimes} from "react-icons/fa";
 
 const CreatePoll = () => {
   const [pollData, setPollData] = useState({
@@ -16,7 +17,7 @@ const CreatePoll = () => {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [agaBalance, setAgaBalance] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
@@ -51,6 +52,17 @@ const CreatePoll = () => {
         navigate("/");
       });
   }, [navigate]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSidebarCollapsed(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
   const handleChange = (e, index) => {
     const newCandidates = [...pollData.candidates];
@@ -118,11 +130,8 @@ const handleSubmit = async (e) => {
         <SidebarLayout />
       </div>
 
-      <button
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="collapse-btn"
-      >
-        {sidebarCollapsed ? "→" : "←"}
+      <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content">

@@ -21,7 +21,6 @@ import GroupsList from "./pages/GroupsList"; // (или путь где буде
 import GroupJoinRequests from "./pages/GroupJoinRequests"; // (если хочешь список заявок)
 import CreateGroupPoll from "./pages/CreateGroupPoll";
 import BrowseGroups from "./pages/BrowseGroups";
-import GroupMembers from "./pages/GroupMembers";
 import GroupDetail from "./pages/GroupDetail";
 
 function App() {
@@ -56,7 +55,6 @@ function App() {
 
                 <Route path="/groups/create-poll" element={<CreateGroupPoll />} />
                 <Route path="/groups/browse" element={<BrowseGroups />} />
-                <Route path="/groups/:group_id/members" element={<GroupMembers />} />
                 <Route path="/groups/:groupId" element={<GroupDetail />} />
 
 

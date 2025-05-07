@@ -199,3 +199,50 @@
 .back-dashboard-btn:hover {
   opacity: 0.85;
 }
+
+
+@media (max-width: 600px) {
+  .poll-form-container {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: none;
+  }
+
+  .poll-form-heading {
+    font-size: 22px;
+  }
+
+  .poll-input {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .gradient-button,
+  .back-dashboard-btn,
+  .copy-button {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .remove-candidate-btn {
+    width: 32px;
+    font-size: 18px;
+  }
+
+  .poll-message-box {
+    font-size: 14px;
+  }
+
+  .card {
+    padding: 20px;
+    box-shadow: none;
+  }
+
+  .poll-form-container,
+.card {
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+}

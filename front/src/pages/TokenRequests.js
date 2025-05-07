@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SidebarLayout from "../components/SidebarLayout";
 import "./TokenRequests.css";
+import {FaBars, FaTimes} from "react-icons/fa";
 
 const TokenRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -9,11 +10,23 @@ const TokenRequests = () => {
   const [user, setUser] = useState(null);
   const [agaBalance, setAgaBalance] = useState(null);
   const [showUserInfo, setShowUserInfo] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+
 
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  useEffect(() => {
+  const handleResize = () => {
+    setSidebarCollapsed(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 
   const fetchRequests = async () => {
     try {
@@ -62,11 +75,8 @@ const TokenRequests = () => {
         />
       </div>
 
-      <button
-        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="collapse-btn"
-      >
-        {sidebarCollapsed ? "→" : "←"}
+      <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="collapse-btn">
+        {sidebarCollapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
       </button>
 
       <div className="main-content token-requests-main">

@@ -95,7 +95,7 @@
   border-radius: 30px;
   font-weight: bold;
   transition: 0.3s;
-  /* justify-content: end ; */
+   justify-content: end ;
 }
 
 .login-btn:hover {

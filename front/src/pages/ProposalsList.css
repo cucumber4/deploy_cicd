@@ -107,11 +107,15 @@
 .proposals-btn.approve {
   background: linear-gradient(90deg, #6e8efb, #a777e3);
   color: white;
+  min-width: 110px; /* Match Approve button */
+  white-space: nowrap;
 }
 
 .proposals-btn.reject {
   background: linear-gradient(90deg, #ff758c, #ff7eb3);
   color: white;
+  min-width: 110px; /* Match Approve button */
+  white-space: nowrap; /* Prevent line break */
 }
 
 .proposals-btn:hover {
@@ -128,4 +132,41 @@
   color: #ff9800;
   display: inline-block;
   min-width: 1.5em;
+}
+
+@media (max-width: 600px) {
+  .proposals-th,
+  .proposals-td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .proposals-heading {
+    font-size: 22px;
+  }
+
+  .proposals-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: unset;
+    white-space: nowrap;
+  }
+
+  .proposals-options {
+    font-size: 13px;
+  }
+
+  .proposals-btn-group {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .proposals-box {
+    padding: 20px;
+  }
+
+  .proposals-content {
+    padding: 16px;
+  }
 }
