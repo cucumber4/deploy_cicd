@@ -51,7 +51,7 @@ const Dashboard = () => {
 
   const fetchOpenPolls = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/polls/list/onchain/active");
+      const response = await axios.get("http://127.0.0.1:8000/polls/list");
       setAllOpenPolls(response.data);
       setLatestPolls(response.data.slice(0, 5));
 
