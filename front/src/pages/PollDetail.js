@@ -19,7 +19,7 @@ const PollDetail = () => {
   const [copied, setCopied] = useState(false);
 
   const TOKEN_ADDRESS = "0x024b770fd5E43258363651B5545efbf080d0775F";
-  const VOTING_CONTRACT_ADDRESS = "0x0946E6cBd737764BdbEC76430d030d30c653A7f9";
+  const VOTING_CONTRACT_ADDRESS = "0xdaaE74f16f6C25813448A71E7354bb1Fb3B7e2FD";
 
   const TOKEN_ABI = [
     {

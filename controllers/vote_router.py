@@ -221,7 +221,7 @@ VOTING_ABI = [
 RPC_URL = "https://sepolia.infura.io/v3/cbfec6723c0b4264b5b3dcf5cba569e9"
 web3 = Web3(Web3.HTTPProvider(RPC_URL, {"timeout": 60}))
 
-VOTING_CONTRACT_ADDRESS = "0x0946E6cBd737764BdbEC76430d030d30c653A7f9"
+VOTING_CONTRACT_ADDRESS = "0xdaaE74f16f6C25813448A71E7354bb1Fb3B7e2FD"
 
 voting_contract = web3.eth.contract(address=VOTING_CONTRACT_ADDRESS, abi=VOTING_ABI)
 

@@ -15,7 +15,7 @@ tx = {
     'value': 1,
     'gas': 21000,
     'gasPrice': int(web3.eth.gas_price * 1.5),
-    'nonce': nonce,  # актуальный nonce
+    'nonce': 114,  # актуальный nonce
     'chainId': 11155111
 }
 
